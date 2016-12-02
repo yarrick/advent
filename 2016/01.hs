@@ -30,3 +30,29 @@ moves dir
  | d == 3 = (0,-1)
    where d = dir `mod` 4
 
+-- part 2
+
+
+distance2 str = (abs x) + (abs y)
+ where (d,x,y,h) = walk2 (0,0,0,[(0,0)]) $ map decode $ words str
+
+walk2 :: (Int,Int,Int,[(Int,Int)]) -> [(Direction,Int)] -> (Int,Int,Int,[(Int,Int)])
+walk2 a [] = a
+walk2 (dir,x,y,hist) ((move,len):mm)
+ | collision == [] = walk2 (newdir,nx,ny,pos ++ hist) mm
+ | otherwise = (newdir, cx, cy, hist)
+  where newdir = turn dir move
+        pos = map (step newdir (x,y)) (take len [1..])
+	(nx,ny) = last pos
+	collision = hits $ collide hist pos
+	(cx, cy, ct) = head collision
+
+collide :: [(Int,Int)] -> [(Int,Int)] -> [(Int,Int,Bool)]
+collide _ [] = []
+collide hist ((x,y):pos) = (x,y,elem (x,y) hist) : collide hist pos
+
+hits :: [(Int,Int,Bool)] -> [(Int,Int,Bool)]
+hits pos = take 1 $ dropWhile miss pos
+
+miss :: (Int,Int,Bool) -> Bool
+miss (a,b,c) = not c
