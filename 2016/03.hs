@@ -7,13 +7,12 @@ check nums = (last all) < (sum $ take 2 all)
 parse :: String -> [Int]
 parse str = map read $ words str
 
-part1 :: [String] -> String
-part1 rows = show $ length $ filter (==True) $ map check $ map parse rows
+part1 :: [String] -> Int
+part1 rows = length $ filter (==True) $ map (check . parse) rows
 
--- part 2
-check3 :: [String] -> Int
-check3 [] = 0
-check3 (a:b:c:dd) = (length $ filter (==True) [left,mid,right]) + check3 dd
+part2 :: [String] -> Int
+part2 [] = 0
+part2 (a:b:c:dd) = (length $ filter (==True) [left,mid,right]) + part2 dd
   where pa = parse a
         pb = parse b
         pc = parse c
@@ -21,11 +20,8 @@ check3 (a:b:c:dd) = (length $ filter (==True) [left,mid,right]) + check3 dd
         mid   = check [pa!!1, pb!!1, pc!!1]
         right = check [pa!!2, pb!!2, pc!!2]
 
-part2 :: [String] -> String
-part2 rows = show $ check3 rows
-
 process :: [String] -> [String]
-process rows = [part1 rows, part2 rows]
+process rows = map show [part1 rows, part2 rows]
 
 -- long file, lets do IO
 main :: IO ()
