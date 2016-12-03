@@ -12,13 +12,8 @@ part1 rows = length $ filter (==True) $ map (check . parse) rows
 
 part2 :: [String] -> Int
 part2 [] = 0
-part2 (a:b:c:dd) = (length $ filter (==True) [left,mid,right]) + part2 dd
-  where pa = parse a
-        pb = parse b
-        pc = parse c
-        left  = check [pa!!0, pb!!0, pc!!0]
-        mid   = check [pa!!1, pb!!1, pc!!1]
-        right = check [pa!!2, pb!!2, pc!!2]
+part2 (a:b:c:dd) = (length $ filter (==True) [ccheck 0,ccheck 1,ccheck 2]) + part2 dd
+  where ccheck x = check [(parse a)!!x, (parse b)!!x, (parse c)!!x]
 
 process :: [String] -> [String]
 process rows = map show [part1 rows, part2 rows]
