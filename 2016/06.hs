@@ -1,17 +1,11 @@
 import Data.List
 
-countAlpha :: [(Char,Int)] -> String -> [(Char,Int)]
-countAlpha a [] = a
-countAlpha count (a:bb) = countAlpha (addCount count a) bb
-
-addCount :: [(Char,Int)] -> Char -> [(Char,Int)]
-addCount [] c = [(c,1)]
-addCount ((al,alcount):bb) c
- | al == c = (al,alcount+1) : bb
- | otherwise = (al,alcount) : addCount bb c
+count :: [String] -> [(Char,Int)]
+count [] = []
+count (a:bb) = (head a, length a) : count bb
 
 decode :: ((Char,Int) -> (Char,Int) -> Ordering) -> String -> Char
-decode cmp x = fst $ head $ sortBy cmp $ countAlpha [] x
+decode cmp x = fst $ head $ sortBy cmp $ count $ group $ sort x
 
 process :: [String] -> [String]
 process rows = [map (decode most) rows, map (decode least) rows]
