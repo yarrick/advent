@@ -33,8 +33,21 @@ part1 addr
         blist = filter (\(a,b) -> a == Bracketed) list
         nlist = filter (\(a,b) -> a == Normal) list
 
+ababab :: [String] -> String -> Bool
+ababab _ (a:b:[]) = False
+ababab blist (a:b:c:dd)
+ | a == c && isAlpha a && isAlpha b = (inb (b:a:b:[]) ) || ababab blist (b:c:dd)
+ | otherwise = ababab blist (b:c:dd)
+  where inb str = or $ map (isInfixOf str) blist
+
+part2 :: String -> Bool
+part2 addr = or $ map (ababab blist) nlist
+  where list = bracketed $ split addr
+        blist = map snd $ filter (\(a,b) -> a == Bracketed) list
+        nlist = map snd $ filter (\(a,b) -> a == Normal) list
+
 process :: [String] -> [String]
-process rows = map show [calc part1]
+process rows = map show [calc part1, calc part2]
   where calc x = length $ filter (==True) $ map x rows
 
 -- long file, lets do IO
