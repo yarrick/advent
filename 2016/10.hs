@@ -8,7 +8,7 @@ data Bot = Bot {
   c2 ::Chip,
   loD::Dest,
   hiD::Dest
-} deriving (Show)
+} deriving (Show,Eq)
 
 rowtypes :: ([String],[String]) -> [String] -> ([String],[String])
 rowtypes a [] = a
@@ -51,17 +51,14 @@ moveChip bots b = addChip (addChip bots (head chips, dest $ loD b)) (last chips,
         dest (DBot d) = d
         dest (DOut _) = -1
 
-lastBot :: Bot -> Bool
-lastBot b = sort [c1 b, c2 b] == [Chip 17, Chip 61]
-
-tick :: [Bot] -> Bot
-tick bots
- | lastBot bb = bb
- | otherwise = tick $ filter (\bot -> bid bot /= bid bb) $ moveChip bots bb
+part1 :: [Bot] -> Bot
+part1 bots
+ | sort [c1 bb, c2 bb] == [Chip 17, Chip 61] = bb
+ | otherwise = part1 $ filter (bb/=) $ moveChip bots bb
   where bb = firstFull bots
 
 process :: [String] -> [String]
-process rows = [show $ bid $ tick start]
+process rows = [show $ bid $ part1 start]
   where (botlines,vallines) = rowtypes ([],[]) rows
         start = foldl addChip (getBots botlines) $ map getChip vallines
 
