@@ -23,11 +23,9 @@ getDest args start
   where h = head $ args !! start
         num = read $ args !! (start+1)
 
-getBots :: [String] -> [Bot]
-getBots [] = []
-getBots (a:bb) = Bot {bid=read $ args!!1,c1=Empty,c2=Empty,
-     loD=getDest args 5,hiD=getDest args 10} : getBots bb
-  where args = words a
+getBot :: String -> Bot
+getBot str = Bot {bid=read $ args!!1,c1=Empty,c2=Empty,loD=getDest args 5,hiD=getDest args 10}
+  where args = words str
 
 addChip :: [Bot] -> (Chip,Int) -> [Bot]
 addChip [] _ = []
@@ -40,27 +38,31 @@ getChip :: String -> (Chip,Int)
 getChip str = (Chip $ read $ args !! 1, read $ args !! 5)
   where args = words str
 
-firstFull :: [Bot] -> Bot
-firstFull (a:bb)
- | c1 a /= Empty && c2 a /= Empty = a
- | otherwise = firstFull bb
+doBot :: ([(Int,Int)],[Bot]) -> Chip -> Dest -> ([(Int,Int)],[Bot])
+doBot (outs,bots) (Chip c) (DOut d) = ((d,c) : outs,bots)
+doBot (outs,bots) chip (DBot b) = (outs, addChip bots (chip,b))
 
-moveChip :: [Bot] -> Bot -> [Bot]
-moveChip bots b = addChip (addChip bots (head chips, dest $ loD b)) (last chips, dest $ hiD b)
+moveChip :: ([(Int,Int)],[Bot]) -> Bot -> ([(Int,Int)],[Bot])
+moveChip (outs,bots) b = doBot (doBot (outs,bots) (head chips) (loD b)) (last chips) (hiD b)
   where chips = sort $ [c1 b, c2 b]
-        dest (DBot d) = d
-        dest (DOut _) = -1
 
 part1 :: [Bot] -> Bot
 part1 bots
  | sort [c1 bb, c2 bb] == [Chip 17, Chip 61] = bb
- | otherwise = part1 $ filter (bb/=) $ moveChip bots bb
-  where bb = firstFull bots
+ | otherwise = part1 $ filter (bb/=) $ snd $ moveChip ([],bots) bb
+  where bb = head $ filter (\a -> c1 a /= Empty && c2 a /= Empty) bots
+
+part2 :: ([(Int,Int)],[Bot]) -> ([(Int,Int)],[Bot])
+part2 (outs,[]) = (outs,[])
+part2 (outs,bots) = part2 (o2, filter (bb/=) b2)
+  where bb = head $ filter (\a -> c1 a /= Empty && c2 a /= Empty) bots
+        (o2,b2) = moveChip (outs,bots) bb
 
 process :: [String] -> [String]
-process rows = [show $ bid $ part1 start]
+process rows = map show [bid $ part1 start,
+                         product $ map snd $ take 3 $ sort $ fst $ part2 ([],start)]
   where (botlines,vallines) = rowtypes ([],[]) rows
-        start = foldl addChip (getBots botlines) $ map getChip vallines
+        start = foldl addChip (map getBot botlines) $ map getChip vallines
 
 -- long file, lets do IO
 main :: IO ()
