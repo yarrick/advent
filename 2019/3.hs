@@ -38,8 +38,7 @@ wire :: String -> [(Int,Int)]
 wire moves = sort $ expand 0 0 $ parse moves
 
 run :: String -> String -> Int
-run a b = minimum $ map (\(x,y) -> (abs x) + (abs y)) crosses
-  where crosses = cross (wire a) (wire b)
+run a b = minimum $ map (\(x,y) -> (abs x) + (abs y)) $ cross (wire a) (wire b)
 
 -- like List intersect but for sorted lists
 cross :: [(Int,Int)] -> [(Int,Int)] -> [(Int,Int)]
@@ -53,3 +52,20 @@ cross x@((a,b):xs) y@((c,d):ys)
   | a == c && b < d = cross xs y
 
 
+-- part 2
+
+wirelen :: String -> [((Int,Int),Int)]
+wirelen moves = sort $ zip (expand 0 0 $ parse moves) [1..]
+
+crosslen :: [((Int,Int),Int)] -> [((Int,Int),Int)] -> [(Int,Int,Int)]
+crosslen [] _ = []
+crosslen _ [] = []
+crosslen x@(((a,b),p):xs) y@(((c,d),q):ys)
+  | a == c && b == d = (a,b,p+q) : crosslen xs ys
+  | a > c = crosslen x ys
+  | c > a = crosslen xs y
+  | a == c && b > d = crosslen x ys
+  | a == c && b < d = crosslen xs y
+
+run2 :: String -> String -> Int
+run2 a b = minimum $ map (\(x,y,len) -> len) $ crosslen (wirelen a) (wirelen b)
