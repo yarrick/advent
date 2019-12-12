@@ -56,12 +56,12 @@ moverobot dir (xdiff,ydiff) cur@(x,y,_,_) old
 
 paint :: (Robot, State) -> (Robot,State)
 paint (robot, state)
-  | length out < 2 = (robot, newstate)
-  | otherwise = paint (newrobot, (pc,mem,inp,[],base,h))
+  | length (outdata newstate) < 2 = (robot, newstate)
+  | otherwise = paint (newrobot, newstate { outdata = [] })
   where
     preppedstate = inputnum state (toInteger $ getcolor robot)
-    newstate@(pc,mem,inp,out,base,h) = exec preppedstate
-    getint pos = fromInteger (out !! pos)
+    newstate = exec preppedstate
+    getint pos = fromInteger ((outdata newstate) !! pos)
     newrobot = turnrobot (paintsq robot (getint 0)) (getint 1)
 
 haltcpu :: [Integer] -> Bool
@@ -79,9 +79,9 @@ iswhite list (x,y)
   | otherwise = ' '
 
 letters pos = mx
-  where mx = matrix 80 78 (iswhite pos)
+  where mx = matrix 12 45 (iswhite pos)
 
-run2 bytes = map (\r -> getRow r (letters whitepos)) [1..70]
+run2 bytes = map (\r -> getRow r (letters whitepos)) [1..12]
   where
     (donerobot@(_,s,sq), donestate) = paint (newrobot White, newhaltstate (parse bytes) [] haltcpu)
-    whitepos = map (\(x,y,c,p) -> (x,20 - y)) $ filter (\(_,_,color,_) -> color == White) (s:sq)
+    whitepos = map (\(x,y,c,p) -> (x,2 - y)) $ filter (\(_,_,color,_) -> color == White) (s:sq)

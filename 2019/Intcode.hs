@@ -1,29 +1,34 @@
 module Intcode where
 
-type State = (
-  Integer,   -- pc
-  [Integer], -- memory
-  [Integer], -- inputs
-  [Integer], -- output
-  Integer,   -- relative base
-  [Integer] -> Bool) -- halt func
+data State = State {
+  pc :: Integer,
+  memory :: [Integer],
+  indata :: [Integer],
+  outdata ::[Integer],
+  relbase :: Integer,
+  haltfunc :: [Integer] -> Bool}
+
+instance Show (State) where
+  show st = "PC " ++ (show $ pc st) ++ " Mem " ++ show (take 32 $ memory st)
+    ++ " Input " ++ show (indata st) ++ " Output " ++ show (outdata st)
+    ++ " Relbase " ++ show (relbase st)
 
 getmem :: [Integer] -> Integer -> Integer
 getmem mem p = head $ drop (fromInteger p) mem
 
 step :: State -> State
-step d@(pc,mem,_,_,_,_)
-  | op == 1 = compute (+) d immediate
-  | op == 2 = compute (*) d immediate
-  | op == 3 = input d immediate
-  | op == 4 = output d immediate
-  | op == 5 = jump (0/=) d immediate
-  | op == 6 = jump (0==) d immediate
-  | op == 7 = cmp (<) d immediate
-  | op == 8 = cmp (==) d immediate
-  | op == 9 = relbase d immediate
+step st
+  | op == 1 = compute (+) st immediate
+  | op == 2 = compute (*) st immediate
+  | op == 3 = input st immediate
+  | op == 4 = output st immediate
+  | op == 5 = jump (0/=) st immediate
+  | op == 6 = jump (0==) st immediate
+  | op == 7 = cmp (<) st immediate
+  | op == 8 = cmp (==) st immediate
+  | op == 9 = movrelbase st immediate
     where
-      reg = getmem mem pc
+      reg = getmem (memory st) (pc st)
       op = mod reg 100
       immediate = opflags reg
 
@@ -32,70 +37,72 @@ opflags :: Integer -> [Integer]
 opflags reg = 0 : (take 3 $ map read $ map (\c -> [c]) $ drop 2 $ reverse $ ("0000" ++ show reg))
 
 memset :: State -> Integer -> Integer -> Integer -> State
-memset (pc,mem,inp,out,base,h) newpc pos value =
-  (newpc, take (fromInteger pos) mem ++ [value] ++ drop (fromInteger (pos + 1)) mem, inp, out, base, h)
+memset st newpc pos value =
+  st { pc = newpc,
+       memory = take (fromInteger pos) (memory st) ++ [value] ++ drop (fromInteger (pos + 1)) (memory st) }
 
 compute :: (Integer -> Integer -> Integer) -> State -> [Integer] -> State
-compute op d@(pc,mem,inp,out,_,_) imm = memset d (pc+4) res (op a b)
+compute op st imm = memset st ((pc st)+4) res (op a b)
     where
-      a = fetch d imm 1
-      b = fetch d imm 2
-      res = outpos d imm 3
+      a = fetch st imm 1
+      b = fetch st imm 2
+      res = outpos st imm 3
 
 -- immediate or position access
 fetch :: State -> [Integer] -> Integer -> Integer
-fetch (pc,mem,_,_,base,_) imm offset
+fetch st imm offset
   | getmem imm offset == 1 = reg
-  | getmem imm offset == 2 = getmem mem (base + reg)
-  | otherwise = getmem mem reg
-    where reg = getmem mem (pc + offset)
+  | getmem imm offset == 2 = getmem (memory st) ((relbase st) + reg)
+  | otherwise = getmem (memory st) reg
+    where reg = getmem (memory st) ((pc st) + offset)
 
 outpos :: State -> [Integer] -> Integer -> Integer
-outpos d@(pc,mem,_,_,base,_) imm offset
-  | getmem imm offset == 2 = base + reg
+outpos st imm offset
+  | getmem imm offset == 2 = (relbase st) + reg
   | otherwise = reg
-    where reg = getmem mem (pc + offset)
+    where reg = getmem (memory st) ((pc st) + offset)
 
 input :: State -> [Integer] -> State
-input d@(pc,mem,inp,out,base,h) imm = memset (pc,mem,tail inp,out,base,h) (pc+2) pos $ head inp
-  where pos = outpos d imm 1
+input st imm = memset (st { indata = tail (indata st) }) ((pc st)+2) pos $ head (indata st)
+  where pos = outpos st imm 1
 
 output :: State -> [Integer] -> State
-output d@(pc,mem,inp,out,base,h) imm = (pc+2, mem, inp, out ++ [val], base, h)
-  where val = fetch d imm 1
+output st imm = st { pc = (pc st) +2, outdata = (outdata st) ++ [val] }
+  where val = fetch st imm 1
 
 jump :: (Integer -> Bool) -> State -> [Integer] -> State
-jump op d@(pc,mem,inp,out,base,h) imm
-  | op arg = (pos, mem, inp, out, base, h)
-  | otherwise = (pc+3, mem, inp, out, base, h)
+jump op st imm
+  | op arg = st { pc = pos }
+  | otherwise = st { pc = (pc st) + 3 }
     where
-      arg = fetch d imm 1
-      pos = fetch d imm 2
+      arg = fetch st imm 1
+      pos = fetch st imm 2
 
 cmp :: (Integer -> Integer -> Bool) -> State -> [Integer] -> State
-cmp op d@(pc,mem,inp,out,_,_) imm
-  | op a b = memset d (pc+4) res 1
-  | otherwise = memset d (pc+4) res 0
+cmp op st imm
+  | op a b = memset st ((pc st)+4) res 1
+  | otherwise = memset st ((pc st)+4) res 0
     where
-      a = fetch d imm 1
-      b = fetch d imm 2
-      res = outpos d imm 3
+      a = fetch st imm 1
+      b = fetch st imm 2
+      res = outpos st imm 3
 
-relbase :: State -> [Integer] -> State
-relbase d@(pc,mem,inp,out,base,h) imm = (pc+2,mem,inp,out, base + fetch d imm 1,h)
+movrelbase :: State -> [Integer] -> State
+movrelbase st imm = st { pc = (pc st) + 2, relbase = (relbase st) + fetch st imm 1 }
 
 exec :: State -> State
-exec d@(pc,mem,inp,out,b,halter)
-  | halter out = d
-  | (getmem mem pc) == 99 = (-1,mem,inp,out,b,halter)
-  | otherwise = exec $ step d
+exec st
+  | (haltfunc st) (outdata st) = st
+  | (getmem (memory st) (pc st)) == 99 = st { pc = -1 }
+  | otherwise = exec $ step st
 
 newstate :: [Integer] -> [Integer] -> State
-newstate instr input = (0, instr ++ (take 20000 $ repeat 0), input, [], 0, (\x -> False))
+newstate instr input = newhaltstate instr input (\x -> False)
 
 newhaltstate :: [Integer] -> [Integer] -> ([Integer] -> Bool) -> State
-newhaltstate instr input halter = (0, instr ++ (take 20000 $ repeat 0), input, [], 0, halter)
+newhaltstate instr input halter = State { pc = 0, memory = instr ++ (take 1000 $ repeat 0),
+  indata = input, outdata = [], relbase = 0, haltfunc = halter }
 
 inputnum :: State -> Integer -> State
-inputnum (pc,mem,inp,out,base,h) num = (pc,mem,inp ++ [num],out,base,h)
+inputnum st num = st { indata = (indata st) ++ [num] }
 

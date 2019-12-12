@@ -10,7 +10,7 @@ program num mem = head mem : toInteger noun : toInteger verb : (drop 3 mem)
     where (noun, verb) = quotRem num 100
 
 memzero :: State -> Integer
-memzero (_,mem,_,_,_,_) = mem !! 0
+memzero st = (memory st) !! 0
 
 run :: String -> Integer
 run bytes = memzero $ exec $ newstate (program 1202 $ parse bytes) []
