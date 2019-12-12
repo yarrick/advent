@@ -85,9 +85,9 @@ relbase :: State -> [Integer] -> State
 relbase d@(pc,mem,inp,out,base,h) imm = (pc+2,mem,inp,out, base + fetch d imm 1,h)
 
 exec :: State -> State
-exec d@(pc,mem,_,out,_,halter)
+exec d@(pc,mem,inp,out,b,halter)
   | halter out = d
-  | (getmem mem pc) == 99 = d
+  | (getmem mem pc) == 99 = (-1,mem,inp,out,b,halter)
   | otherwise = exec $ step d
 
 newstate :: [Integer] -> [Integer] -> State
