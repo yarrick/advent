@@ -1,5 +1,7 @@
 module Intcode where
 
+import Control.DeepSeq
+
 data State = State {
   pc :: Integer,
   memory :: [Integer],
@@ -37,9 +39,8 @@ opflags :: Integer -> [Integer]
 opflags reg = 0 : (take 3 $ map read $ map (\c -> [c]) $ drop 2 $ reverse $ ("0000" ++ show reg))
 
 memset :: State -> Integer -> Integer -> Integer -> State
-memset st newpc pos value =
-  st { pc = newpc,
-       memory = take (fromInteger pos) (memory st) ++ [value] ++ drop (fromInteger (pos + 1)) (memory st) }
+memset st newpc pos value = deepseq mem $ st { pc = newpc, memory = mem }
+       where mem = take (fromInteger pos) (memory st) ++ [value] ++ drop (fromInteger (pos + 1)) (memory st)
 
 compute :: (Integer -> Integer -> Integer) -> State -> [Integer] -> State
 compute op st imm = memset st ((pc st)+4) res (op a b)
