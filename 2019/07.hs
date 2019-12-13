@@ -34,7 +34,7 @@ runamp :: State -> State
 runamp st = exec st { outdata = [] }
 
 newamp :: [Integer] -> State
-newamp mem = newhaltstate mem [] (\out -> length out > 0)
+newamp mem = newhaltstate mem [] (\st -> length (outdata st) > 0)
 
 ampinput :: (State, [Integer]) -> State
 ampinput (state,i) = foldl inputnum state i

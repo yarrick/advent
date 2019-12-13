@@ -64,8 +64,8 @@ paint (robot, state)
     getint pos = fromInteger ((outdata newstate) !! pos)
     newrobot = turnrobot (paintsq robot (getint 0)) (getint 1)
 
-haltcpu :: [Integer] -> Bool
-haltcpu out = length out > 1
+haltcpu :: State -> Bool
+haltcpu st = length (outdata st) > 1
 
 run bytes = length $ filter (\(_,_,_,p) -> p) (s:sq)
   where

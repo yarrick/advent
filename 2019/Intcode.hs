@@ -6,7 +6,7 @@ data State = State {
   indata :: [Integer],
   outdata ::[Integer],
   relbase :: Integer,
-  haltfunc :: [Integer] -> Bool}
+  haltfunc :: State -> Bool}
 
 instance Show (State) where
   show st = "PC " ++ (show $ pc st) ++ " Mem " ++ show (take 32 $ memory st)
@@ -92,14 +92,14 @@ movrelbase st imm = st { pc = (pc st) + 2, relbase = (relbase st) + fetch st imm
 
 exec :: State -> State
 exec st
-  | (haltfunc st) (outdata st) = st
+  | (haltfunc st) st = st
   | (getmem (memory st) (pc st)) == 99 = st { pc = -1 }
   | otherwise = exec $ step st
 
 newstate :: [Integer] -> [Integer] -> State
 newstate instr input = newhaltstate instr input (\x -> False)
 
-newhaltstate :: [Integer] -> [Integer] -> ([Integer] -> Bool) -> State
+newhaltstate :: [Integer] -> [Integer] -> (State -> Bool) -> State
 newhaltstate instr input halter = State { pc = 0, memory = instr ++ (take 1000 $ repeat 0),
   indata = input, outdata = [], relbase = 0, haltfunc = halter }
 
