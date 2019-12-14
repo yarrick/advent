@@ -8,10 +8,11 @@ data Instr =
     Incr Argument |
     Decr Argument |
     JumpNZ Argument Argument |
-    Toggle Argument deriving (Eq, Show)
+    Toggle Argument |
+    Output Argument deriving (Eq, Show)
 
--- instructions, position, registers
-type VM = ([Instr], Int, [Int])
+-- instructions, position, registers, output
+type VM = ([Instr], Int, [Int], [Int])
 
 readArg :: String -> Argument
 readArg "a" = Register 0
@@ -27,9 +28,10 @@ readInstr ("inc":a:xs) = Incr (readArg a) : readInstr xs
 readInstr ("dec":a:xs) = Decr (readArg a) : readInstr xs
 readInstr ("jnz":a:b:xs) = JumpNZ (readArg a) (readArg b) : readInstr xs
 readInstr ("tgl":a:xs) = Toggle (readArg a) : readInstr xs
+readInstr ("out":a:xs) = Output (readArg a) : readInstr xs
 
 newVM :: [Instr] -> [Int] -> VM
-newVM instr regs = (instr,0,regs)
+newVM instr regs = (instr,0,regs,[])
 
 get :: [Int] -> Argument -> Int
 get _ (Number n) = n
@@ -56,15 +58,17 @@ toggleInstr (Copy a b) = (JumpNZ a b)
 toggleInstr (JumpNZ a b) = (Copy a b)
 
 stepVM :: VM -> Instr -> VM
-stepVM (code,pc,reg) (Copy from to) = (code,pc+1,put reg to (get reg from))
-stepVM (code,pc,reg) (Incr a) = (code,pc+1,put reg a (1 + get reg a))
-stepVM (code,pc,reg) (Decr a) = (code,pc+1,put reg a (-1 + get reg a))
-stepVM (code,pc,reg) (JumpNZ a b) = (code,jnz (get reg a) pc (get reg b),reg)
-stepVM (code,pc,reg) (Toggle a) = (toggle code (pc+get reg a), pc+1, reg)
+stepVM (code,pc,reg,out) (Copy from to) = (code,pc+1,put reg to (get reg from),out)
+stepVM (code,pc,reg,out) (Incr a) = (code,pc+1,put reg a (1 + get reg a),out)
+stepVM (code,pc,reg,out) (Decr a) = (code,pc+1,put reg a (-1 + get reg a),out)
+stepVM (code,pc,reg,out) (JumpNZ a b) = (code,jnz (get reg a) pc (get reg b),reg,out)
+stepVM (code,pc,reg,out) (Toggle a) = (toggle code (pc+get reg a), pc+1, reg,out)
+stepVM (code,pc,reg,out) (Output a) = (code, pc+1, reg, out ++ [get reg a])
 
 runVM :: VM -> VM
-runVM vm@(instr,pc,_)
+runVM vm@(instr,pc,_,out)
   | pc < 0 = vm
   | pc >= length instr = vm
+  | length out == 100 = vm
   | otherwise = runVM $ stepVM vm (instr !! pc)
 
