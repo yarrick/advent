@@ -1,20 +1,7 @@
 import Data.List (group)
 
-count :: [Int] -> [Int]
-count x = (length x) : [head x]
+lookAndSay :: String -> String
+lookAndSay str = concatMap (\x -> show (length x) ++ [head x]) $ group str
 
-flatten :: [[t]] -> [t]
-flatten x = foldl (++) [] x
-
-step :: [Int] -> [Int]
-step nbrs = flatten $ map count $ group nbrs
-
-looksay :: String -> String
-looksay str = flatten $ map show $ step nbrs
-	where nbrs = map read $ map (:[]) str
-
-parse :: String -> [Int]
-parse str = map read $ map (:[]) str
-
-run :: String -> Int -> [Int]
-run str num = take num $ map length $ iterate step $ parse str
+run :: String -> [(Int,Int)]
+run str = take 51 $ zip [0..] $ map length $ iterate lookAndSay str
