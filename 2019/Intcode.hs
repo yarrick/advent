@@ -101,7 +101,7 @@ newstate :: [Integer] -> [Integer] -> State
 newstate instr input = newhaltstate instr input (\x -> False)
 
 newhaltstate :: [Integer] -> [Integer] -> (State -> Bool) -> State
-newhaltstate instr input halter = State { pc = 0, memory = instr ++ (take 1000 $ repeat 0),
+newhaltstate instr input halter = State { pc = 0, memory = instr ++ (take 3000 $ repeat 0),
   indata = input, outdata = [], relbase = 0, haltfunc = halter }
 
 inputnum :: State -> Integer -> State
