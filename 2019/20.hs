@@ -23,10 +23,11 @@ getxy m (x,y) fallback
 mark :: Matrix a -> (Int,Int) -> a -> Matrix a
 mark m (x,y) val = setElem val (x+1,y+1) m
 
-update :: Matrix ([(Int,Int)],Int) -> (Int,Int) -> (Matrix ([(Int,Int)],Int),[(Int,Int)])
-update m (x,y)
+update :: Matrix ([(Int,Int)],Int) -> (Int,Int) -> Int -> (Matrix ([(Int,Int)],Int),[(Int,Int)])
+update m (x,y) maxval
   | self == -1 = (m,[])
   | self == 0 = (m,map fst neighbors)
+  | self > maxval = (m,[])
   | length bestnbr == 0 = (m,[])
   | self <= ndist = (m,[])
   | otherwise = (mark m (x,y) (targets,ndist+1),followups)
@@ -38,10 +39,12 @@ update m (x,y)
     (pos,(tg,ndist)) = head bestnbr
     followups = map fst $ filter (\(_,(_,d)) -> d > (ndist+1)) neighbors
 
-flow :: (Matrix ([(Int,Int)],Int),[(Int,Int)]) -> Matrix ([(Int,Int)],Int)
-flow (m,[]) = m
-flow (m,(p:ps)) = flow (mm, nub $ ps ++ pps)
-  where (mm,pps) = update m p
+flow :: (Matrix ([(Int,Int)],Int),[(Int,Int)],(Int,Int)) -> Matrix ([(Int,Int)],Int)
+flow (m,[],end) = m
+flow (m,(p:ps),end) = flow (mm, nub $ ps ++ pps,end)
+  where
+    maxval = snd $ getxy m end ([],-1)
+    (mm,pps) = update m p maxval
 
 dropmargin :: [String] -> [String]
 dropmargin rows = take (nrow-4) $ drop 2 $ map (take (ncol-4). drop 2) rows
@@ -90,7 +93,7 @@ setjump :: Matrix ([(Int,Int)],Int) -> ((Int,Int),(Int,Int)) -> Matrix ([(Int,In
 setjump m (from,to)= mark m from ([to],999999)
 
 process :: [String] -> [String]
-process rows = [show $ snd $ getxy (flow (jumpm,[startpos])) endpos ([],-1)]
+process rows = [show $ snd $ getxy (flow (jumpm,[startpos],endpos)) endpos ([],-1)]
   where m = generate $ dropmargin rows
         taggs = tags rows
         startpos = fst $ head $ filter (\(_,n) -> n == "AA") taggs
