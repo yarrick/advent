@@ -23,24 +23,25 @@ getxy m (x,y) fallback
 mark :: Matrix a -> (Int,Int) -> a -> Matrix a
 mark m (x,y) val = setElem val (x+1,y+1) m
 
-update :: Matrix ([(Int,Int)],Int) -> (Int,Int) -> Matrix ([(Int,Int)],Int)
+update :: Matrix ([(Int,Int)],Int) -> (Int,Int) -> (Matrix ([(Int,Int)],Int),[(Int,Int)])
 update m (x,y)
-  | self == -1 = m
-  | length bestnbr == 0 = m
-  | self <= ndist = m
-  | otherwise = mark m (x,y) (targets,ndist+1)
+  | self == -1 = (m,[])
+  | self == 0 = (m,map fst neighbors)
+  | length bestnbr == 0 = (m,[])
+  | self <= ndist = (m,[])
+  | otherwise = (mark m (x,y) (targets,ndist+1),followups)
   where
     (targets,self) = getxy m (x,y) ([],-1)
     cross = [(x-1,y), (x,y-1), (x+1,y), (x,y+1)] ++ targets
-    neighbors = filter (\(_,(_,d)) -> d >= 0 && d < 999999) $ zip cross (map (\pos -> getxy m pos ([],-1)) cross)
+    neighbors = filter (\(_,(_,d)) -> d >= 0) $ zip cross (map (\pos -> getxy m pos ([],-1)) cross)
     bestnbr = sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b) neighbors
     (pos,(tg,ndist)) = head bestnbr
+    followups = map fst $ filter (\(_,(_,d)) -> d > (ndist+1)) neighbors
 
-flow :: Matrix ([(Int,Int)],Int) -> Matrix ([(Int,Int)],Int)
-flow m
-  | mm == m = m
-  | otherwise = flow mm
-  where mm = foldl update m $ [ (x,y) | x <- [0..((nrows m)-1)], y <- [0..((ncols m)-1)]]
+flow :: (Matrix ([(Int,Int)],Int),[(Int,Int)]) -> Matrix ([(Int,Int)],Int)
+flow (m,[]) = m
+flow (m,(p:ps)) = flow (mm, nub $ ps ++ pps)
+  where (mm,pps) = update m p
 
 dropmargin :: [String] -> [String]
 dropmargin rows = take (nrow-4) $ drop 2 $ map (take (ncol-4). drop 2) rows
@@ -89,7 +90,7 @@ setjump :: Matrix ([(Int,Int)],Int) -> ((Int,Int),(Int,Int)) -> Matrix ([(Int,In
 setjump m (from,to)= mark m from ([to],999999)
 
 process :: [String] -> [String]
-process rows = [show $ snd $ getxy (flow jumpm) endpos ([],-1)]
+process rows = [show $ snd $ getxy (flow (jumpm,[startpos])) endpos ([],-1)]
   where m = generate $ dropmargin rows
         taggs = tags rows
         startpos = fst $ head $ filter (\(_,n) -> n == "AA") taggs
