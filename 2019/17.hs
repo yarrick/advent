@@ -1,6 +1,5 @@
 import Prelude hiding (Left,Right)
 import Intcode
-import Data.Char
 import Data.Matrix
 
 parse :: String -> [Integer]
@@ -31,7 +30,7 @@ score m ((x,y):ps) = (x-1)*(y-1) : score m ps
 
 run bytes = sum $ score m $ concatMap (cross m) $ [ (x,y) | x <- [1..(nrows m)], y <- [1..(ncols m)]]
   where state = exec $ newstate (parse bytes) []
-        drawing = lines $ map (chr . fromInteger) $ outdata state
+        drawing = outputstr state
         graph = filter (\x -> length x == length (head drawing)) drawing
         m = fromList (length graph) (length (head graph)) (concat graph)
 
@@ -83,14 +82,14 @@ walk (pos,dir) m
 -- prints path, compress manually, and update a/b/c/main below
 path bytes = walk (findbot m) m
   where state = exec $ newhaltstate (2 : tail (parse bytes)) [] needinput
-        drawing = lines $ map (chr . fromInteger) $ outdata state
+        drawing = outputstr state
         graph = filter (\x -> length x == length (head drawing)) drawing
         m = fromList (length graph) (length (head graph)) (concat graph)
 
-run2 bytes = last $ outdata $ exec $ foldl inputnum state (map (toInteger . ord) $ concat [main,a,b,c,"n\n"])
+run2 bytes = last $ outdata $ exec $ foldl inputstr state [main,a,b,c,"n"]
   where state = exec $ newhaltstate (2 : tail (parse bytes)) [] needinput
-        a = "L,6,R,8,R,12,L,6,L,8\n"
-        b = "L,10,L,8,R,12\n"
-        c = "L,8,L,10,L,6,L,6\n"
-        main = "A,B,A,C,B,C,B,A,C,B\n"
+        a = "L,6,R,8,R,12,L,6,L,8"
+        b = "L,10,L,8,R,12"
+        c = "L,8,L,10,L,6,L,6"
+        main = "A,B,A,C,B,C,B,A,C,B"
 

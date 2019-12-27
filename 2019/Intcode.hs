@@ -1,6 +1,7 @@
 module Intcode where
 
 import Control.DeepSeq
+import Data.Char
 
 data State = State {
   pc :: Integer,
@@ -93,8 +94,8 @@ movrelbase st imm = st { pc = (pc st) + 2, relbase = (relbase st) + fetch st imm
 
 exec :: State -> State
 exec st
-  | (haltfunc st) st = st
   | (getmem (memory st) (pc st)) == 99 = st { pc = -1 }
+  | (haltfunc st) st = st
   | otherwise = exec $ step st
 
 newstate :: [Integer] -> [Integer] -> State
@@ -107,3 +108,8 @@ newhaltstate instr input halter = State { pc = 0, memory = instr ++ (take 3000 $
 inputnum :: State -> Integer -> State
 inputnum st num = st { indata = (indata st) ++ [num] }
 
+inputstr :: State -> String -> State
+inputstr st str = st { indata = (indata st) ++ map (toInteger.ord) (str ++ "\n") }
+
+outputstr :: State -> [String]
+outputstr st = lines $ map (chr.fromInteger) $ outdata st
