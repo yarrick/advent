@@ -1,28 +1,28 @@
 import Data.List
 
-dealnew :: [Int] -> [Int]
-dealnew = reverse
+dealnew :: Integer -> Integer -> Integer
+dealnew decksize card = decksize - card - 1
 
-cut :: Int -> [Int] -> [Int]
-cut pos cards
-  | pos >= 0 = drop pos cards ++ take pos cards
-  | otherwise = cut (length cards - (abs pos)) cards
+dealinc :: Integer -> Integer -> Integer -> Integer
+dealinc n decksize card = mod (n*card) decksize
 
-dealinc :: Int -> [Int] -> [Int]
-dealinc n cards = map snd $ sortBy (\(a,_) (b,_) -> compare a b) cardorder
-   where cardorder = map (\(a,b) -> (mod (n*a) (length cards),b)) $ zip [0..] cards
+cut :: Integer -> Integer -> Integer -> Integer
+cut pos decksize card
+  | pos >= 0 && card < pos = decksize - pos + card
+  | pos >= 0 = card - pos
+  | otherwise = cut (decksize - (abs pos)) decksize card
 
-parse :: [String] -> ([Int] -> [Int])
+parse :: [String] -> (Integer -> Integer -> Integer)
 parse ("deal":"with":_:num:rest) = dealinc $ read num
 parse ("deal":"into":rest) = dealnew
 parse ("cut":num:rest) = cut $ read num
 
-part1 [] cards = cards
-part1 (m:ms) cards = part1 ms (m cards)
+shuffle :: [(Integer -> Integer -> Integer)] -> Integer -> Integer -> Integer
+shuffle [] _ pos = pos
+shuffle (m:ms) decksize pos = shuffle ms decksize (m decksize pos)
 
 process :: [String] -> [String]
-process rows = [show $ findIndex (2019==) $ part1 moves [0..10006]]
-  where moves = map (parse.words) rows
+process rows = [show $ shuffle (map (parse.words) rows) 10007 2019]
 
 -- long file, lets do IO
 main :: IO ()
