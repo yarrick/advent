@@ -1,7 +1,5 @@
 module Asmbunny where
 
-import Control.DeepSeq
-
 data Argument = Number Int | Register Int deriving (Eq, Show)
 data Instr =
     Copy Argument Argument |
@@ -65,10 +63,34 @@ stepVM (code,pc,reg,out) (JumpNZ a b) = (code,jnz (get reg a) pc (get reg b),reg
 stepVM (code,pc,reg,out) (Toggle a) = (toggle code (pc+get reg a), pc+1, reg,out)
 stepVM (code,pc,reg,out) (Output a) = (code, pc+1, reg, out ++ [get reg a])
 
+findadd :: [Instr] -> [(Argument,Argument)]
+findadd ((Incr a):(Decr b):(JumpNZ c d):[])
+  | b == c && d == (Number (-2)) = [(a,b)]
+  | otherwise = []
+findadd _ = []
+
+findmul :: [Instr] -> [(Argument,Argument)] -> [(Argument,Argument,Argument)]
+findmul _ [] = []
+findmul ((Decr a):(JumpNZ b c):[]) ((to,from):[])
+  | a == b && c == (Number (-5)) && a /= to && a /= from = [(to,from,a)]
+  | otherwise = []
+
+adder (instr,pc,reg,out) (to,from) = (instr,pc+3,put added from 0,out)
+  where added = put reg to (get reg to + get reg from)
+
+muler (instr,pc,reg,out) (to,from,multiplier) = (instr,pc+5,put cleared from 0,out)
+  where muled = put reg to (get reg to + (get reg from * get reg multiplier))
+        cleared = put muled multiplier 0
+
 runVM :: VM -> VM
 runVM vm@(instr,pc,_,out)
   | pc < 0 = vm
   | pc >= length instr = vm
   | length out == 100 = vm
+  | length mul > 0 = runVM $ muler vm $ head mul
+  | length add > 0 = runVM $ adder vm $ head add
   | otherwise = runVM $ stepVM vm (instr !! pc)
+  where
+    add = findadd $ take 3 $ drop pc instr
+    mul = findmul (drop 3 $ take 5 $ drop pc instr) add
 
