@@ -61,20 +61,20 @@ path from to dists
   | otherwise = snd $ head $ filter (\((f,t),_) -> f == from && t == to) dists
 
 data Output = Result String Int |
-              PossiblePath (Char,(Int,Int),([Char],Int)) [(Char,(Int,Int))] deriving (Eq,Show)
+              PossiblePath (Char,([Char],Int)) [Char] deriving (Eq,Show)
 
 type Distance = ((Char,Char),([Char],[Char],Int))
 
-mostkeys :: (Char,(Int,Int),([Char],[Char],Int)) -> (Char,(Int,Int),([Char],[Char],Int)) -> Ordering
-mostkeys (_,_,(da,ka,sa)) (_,_,(db,kb,sb)) = compare kb ka
+mostkeys :: (Char,([Char],[Char],Int)) -> (Char,([Char],[Char],Int)) -> Ordering
+mostkeys (_,(da,ka,sa)) (_,(db,kb,sb)) = compare kb ka
 
-expand :: (Char,(Int,Int),([Char],Int)) -> [Distance] -> [(Char,(Int,Int))] -> [Output]
-expand (_,_,(carry,steps)) _ [] = [Result carry steps]
-expand (c,startpos,(carry,steps)) dists keys =
-  map (\(k,kp,(drs,ks,dist)) -> PossiblePath (k,kp,(nub $ carry ++ ks ++ [c], steps+dist)) (delete (k,kp) keys)) viable
+expand :: (Char,([Char],Int)) -> [Distance] -> [Char] -> [Output]
+expand (_,(carry,steps)) _ [] = [Result carry steps]
+expand (c,(carry,steps)) dists keys =
+  map (\(k,(drs,ks,dist)) -> PossiblePath (k,(nub $ carry ++ ks ++ [c], steps+dist)) (delete k keys)) viable
   where
-    openable (_,_,(d,ak,_)) = length d == length (intersect d (nub $ c:carry++ak))
-    viable = filter openable $ map (\(k,kp) -> (k,kp,path c k dists)) keys
+    openable (_,(d,ak,_)) = length d == length (intersect d (nub $ c:carry++ak))
+    viable = filter openable $ map (\k -> (k,path c k dists)) keys
 
 shortest :: Int -> Output -> Int
 shortest cur (Result _ s) = minimum [s,cur]
@@ -85,7 +85,7 @@ workpath _ _ [] = []
 workpath dists stoplen ((Result p steps):os)
   | steps >= stoplen = os
   | otherwise = Result p steps : workpath dists stoplen os
-workpath dists stoplen ((PossiblePath pos@(_,_,(_,steps)) keys):os)
+workpath dists stoplen ((PossiblePath pos@(_,(_,steps)) keys):os)
   | steps >= stoplen = os
   | length exp == 0 = workpath dists stoplen os
   | otherwise = exp ++ os
@@ -144,29 +144,34 @@ filterkey doorsets (key,autokeys)
 
 scrapkeys :: [(Int,String)] -> [(String,[(Char,String)])] -> [Char]
 scrapkeys _ [] = []
-scrapkeys doorsets ((doors,keys):ds) = nub (concat $ map (filterkey doorsets) keys) ++ scrapkeys doorsets ds
+scrapkeys doorsets ((doors,keys):ds) = (concat $ map (filterkey doorsets) keys) ++ scrapkeys doorsets ds
 
-redundantkeys :: [Distance] -> [(Char,(Int,Int))] -> [Char]
-redundantkeys dists keypos = scrapkeys doorsets grouped
+redundantkeys :: [Distance] -> [Char] -> [Char]
+redundantkeys dists keys = nub $ scrapkeys doorsets grouped
   where
-    keys = map fst keypos
     rootdists = map (\(a,(ds,ak,dists)) -> (a,(intersect keys ds,intersect keys ak,dists))) $
       filter (\((from,to),_) -> from == '@' && elem to keys) dists
     grouped = map cleangroup $ foldl grouptree [] rootdists
     doorsets = zip [0..] $ map fst grouped
 
-process :: [String] -> [String]
-process rows = [show $ last $ (compress $ map snd $ complete filtdists trail)]
-  where m = generate rows
-        (starter,startpos) = head $ locate rows ('@'==)
-        keys = sort $ map (\(c,p) -> (toUpper c, p)) $ locate rows (\c -> c >= 'a' && c <= 'z')
+part1 :: [String] -> Matrix ([Char],[Char],Int) -> [(Char,(Int,Int))] -> [(Char,(Int,Int))] -> Int
+part1 rows m starters keys
+  | length starters == 1 = last $ (compress $ map snd $ complete filtdists trail)
+  | otherwise = -1
+  where (starter,startpos) = head starters
         dists = getdist m (starter,startpos) keys ++ concat [ getdist m k (dropWhile (k>=) keys) | k <- keys ]
         filteredkeys = cleandist dists
-        goodkeys = filter (\(c,_) -> elem c filteredkeys) keys
+        goodkeys = map fst $ filter (\(c,_) -> elem c filteredkeys) keys
         skipkeys = redundantkeys dists goodkeys
-        betterkeys = filter (\(c,_) -> not $ elem c skipkeys) goodkeys
-        filtdists = map (filterdistkey $ map fst betterkeys) dists
-        trail = ([PossiblePath (starter,startpos,([],0)) betterkeys],99999)
+        betterkeys = filter (\c -> not $ elem c skipkeys) goodkeys
+        filtdists = map (filterdistkey betterkeys) dists
+        trail = ([PossiblePath (starter,([],0)) betterkeys],99999)
+
+process :: [String] -> [String]
+process rows = [show $ part1 rows m starters keys]
+  where m = generate rows
+        starters = locate rows ('@'==)
+        keys = sort $ map (\(c,p) -> (toUpper c, p)) $ locate rows (\c -> c >= 'a' && c <= 'z')
 
 -- long file, lets do IO
 main :: IO ()
