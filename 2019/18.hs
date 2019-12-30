@@ -168,10 +168,38 @@ part1 rows m starters keys
         trail = ([PossiblePath (starter,([],0)) betterkeys],99999)
 
 process :: [String] -> [String]
-process rows = [show $ part1 rows m starters keys]
+process rows = [show $ part1 rows m starters keys] ++ part2 rows m starters keys
   where m = generate rows
         starters = locate rows ('@'==)
         keys = sort $ map (\(c,p) -> (toUpper c, p)) $ locate rows (\c -> c >= 'a' && c <= 'z')
+
+-- part 2
+
+splitmap :: Matrix ([Char],[Char],Int) -> [(Char,(Int,Int))] -> Matrix ([Char],[Char],Int)
+splitmap m ((c,(x,y)):[]) = foldl wallit m walls
+  where walls = [(x-1,y),(x,y-1),(x,y),(x,y+1),(x+1,y)]
+        wallit mx pos = mark mx pos ([],[],-1)
+
+fixstarts :: [(Char,(Int,Int))] -> [(Char,(Int,Int))]
+fixstarts ((c,(x,y)):[]) = zip (repeat c) [(x+1,y-1),(x+1,y+1),(x-1,y-1),(x-1,y+1)]
+
+calcpart :: Matrix ([Char],[Char],Int) -> [(Char,(Int,Int))] -> (Char,(Int,Int)) -> (Char,[Char],[Distance])
+calcpart m keys (starter,startpos) = (starter,goodkeys,dists)
+  where startdist = filter (\(_,(_,_,dist)) -> dist < 999999) $ getdist m (starter,startpos) keys
+        foundkeys = sort $ map (snd.fst) $ startdist
+        mykeys = filter (\(c,_) -> elem c foundkeys) keys
+        dists = startdist ++ concat [ getdist m k (dropWhile (k>=) mykeys) | k <- mykeys ]
+        filteredkeys = cleandist dists
+        goodkeys = map fst $ filter (\(c,_) -> elem c filteredkeys) mykeys
+
+-- solved by hand based on this print
+part2 :: [String] -> Matrix ([Char],[Char],Int) -> [(Char,(Int,Int))] -> [(Char,(Int,Int))] -> [String]
+part2 rows m starters keys
+  | length starters == 1 = part2 rows (splitmap m starters) (fixstarts starters) keys
+  | otherwise = map show parts
+  where rawparts = map (calcpart m keys) starters
+        allkeys = sort $ concat $ map (\(_,ks,_) -> ks) parts
+        parts = map (\(st,ks,dists) -> (st,ks, map (filterdistkey allkeys) dists)) rawparts
 
 -- long file, lets do IO
 main :: IO ()
