@@ -4,12 +4,8 @@ parse (x:xs) = (x == '#') : parse xs
 
 slide :: (Int,Int) -> Int -> Int -> [[Bool]] -> Int
 slide _ _ hits [] = hits
-slide (angle,speed) x hits slope
-    | hit = slide (angle,speed) newx (hits + 1) (drop speed slope)
-    | otherwise = slide (angle,speed) newx hits (drop speed slope)
-    where t = head slope
-          hit = t !! (mod x (length t))
-          newx = x + angle
+slide (angle,speed) x hits slope = slide (angle,speed) (x+angle) newhits (drop speed slope)
+    where newhits = hits + (length $ filter id $ [(head slope) !! (mod x (length $ head slope))])
 
 process :: [String] -> [String]
 process rows = map show [run (3,1),
