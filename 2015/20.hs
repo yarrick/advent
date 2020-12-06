@@ -23,11 +23,24 @@ pfact n (p:rimes)
 
 pfactor n = pfact n primelist
 
-divsum (p,k) = sum $ 1 : map (\x -> p^x) [1..k]
+allproducts [] = []
+allproducts [a] = a
+allproducts (a:b:cs) = allproducts (n:cs)
+    where n = [x*y | x <- a, y <- b]
 
-gifts n = 10 * (product $ map divsum $ pfactor n)
+exps (p,k) = map (\x -> p^x) [0..k]
+
+allfactors n = allproducts $ map exps $ pfactor n
+
+gifts n = 10 * (sum $ allfactors n)
+
+gifts2 n = 11 * (sum $ filter active $ allfactors n)
+    where active x = div n x <= 50
 
 firsthouse n = head $ filter (\(_,v) -> v >= n) houses
     where houses = zip [1..] (map gifts [1..])
 
-main = print $ show $ firsthouse 29000000
+firsthouse2 n = head $ filter (\(_,v) -> v >= n) houses
+    where houses = zip [1..] (map gifts2 [1..])
+
+main = print $ map show [firsthouse 29000000, firsthouse2 29000000]
