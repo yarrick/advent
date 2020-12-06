@@ -1,3 +1,5 @@
+import Control.Parallel.Strategies
+
 factors :: Int -> [Int]
 factors n = [x | x <- [1..(div n 2)], mod n x == 0] ++ [n]
 
@@ -43,4 +45,7 @@ firsthouse n = head $ filter (\(_,v) -> v >= n) houses
 firsthouse2 n = head $ filter (\(_,v) -> v >= n) houses
     where houses = zip [1..] (map gifts2 [1..])
 
-main = print $ map show [firsthouse 29000000, firsthouse2 29000000]
+main = mapM print $ parMap rpar (\op -> show $ fst $ op 29000000) [firsthouse, firsthouse2]
+
+-- ghc -threaded --make 20.hs
+-- time ./20 +RTS -N2
