@@ -1,3 +1,4 @@
+import Data.Sequence as S
 
 winner 1 = 1
 winner 2 = 1
@@ -12,3 +13,12 @@ winner n
     | subwin == 1 = n
     | otherwise = pred $ (pred subwin) * 2
     where subwin = winner (1 + quot (n-1) 2)
+
+play2 :: S.Seq Int -> S.Seq Int
+play2 q
+    | S.length q == 1 = q
+    | otherwise = play2 $ rotate $ pop q
+    where pop s = S.deleteAt (S.length s `div` 2) s
+          rotate t = S.drop 1 t >< S.take 1 t
+
+winner2 n = play2 (S.fromList [1..n])
