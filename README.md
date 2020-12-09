@@ -1,4 +1,4 @@
-Solutions (in haskell so far) to adventofcode.com puzzles
+== Solutions in haskell to adventofcode.com puzzles
 
-I skipped filereading and the code expects a string (all newlines replaced with
-spaces) of the puzzle input to the suitable function
+Solutions with a main method expect the input file to be piped to it,
+otherwise the input should be given to the suitable function inside ghci.
