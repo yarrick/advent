@@ -26,8 +26,8 @@ binhash str = concatMap bits $ K.knot str
 neighbors :: Matrix Int -> (Int,Int) -> [(Int,Int)]
 neighbors m (xs,ys) = filter belongs $ filter validY $ filter validX possible
     where possible = [(xs,y) | y <- [ys-1,ys+1] ] ++ [(x,ys) | x <- [xs-1,xs+1] ]
-          validX (r,_) = r >= 1 && r < nrows m
-          validY (_,c) = c >= 1 && c < ncols m
+          validX (r,_) = r >= 1 && r <= nrows m
+          validY (_,c) = c >= 1 && c <= ncols m
           belongs p = m ! p > 0
 
 cells :: Matrix Int -> [(Int,Int)]
