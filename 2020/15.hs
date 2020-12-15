@@ -1,11 +1,12 @@
 import qualified Data.Sequence as S
+import Control.DeepSeq
 
 store :: S.Seq (Int,Int) -> (Int,Int) -> S.Seq (Int,Int)
 store hist (val,round) = S.update val (prev,round) hist
     where (pp,prev) = S.index hist val
 
 startHist :: S.Seq (Int,Int)
-startHist = S.replicate 10000 (-1,-1)
+startHist = S.replicate 99999999 (-1,-1)
 
 next :: S.Seq (Int,Int) -> Int -> Int -> (Int, S.Seq (Int,Int))
 next hist val round
@@ -14,11 +15,17 @@ next hist val round
     where (pprev,prev) = S.index hist val
           rdiff = prev - pprev
 
-step :: S.Seq (Int,Int) -> Int -> Int -> [Int]
-step hist val round = nval : step nhist nval (succ round)
-    where (nval, nhist) = next hist val round
+step :: S.Seq (Int,Int) -> Int -> Int -> Int -> Int
+step hist val goal round
+    | goal == round = nval
+    | mod round 5000000 == 0 = deepseq n (step nhist nval goal (succ round))
+    | otherwise = step nhist nval goal (succ round)
+    where n = next hist val round
+          (nval, nhist) = seq n n
 
-run :: [Int] -> [Int]
-run starts = [stream !! 2019]
+run :: [Int] -> Int -> Int
+run starts n = step hist (last starts) n (length starts+1)
     where hist = foldl store startHist $ zip starts [1..]
-          stream = starts ++ step hist (last starts) (length starts + 1)
+
+main = print $ show $ [run input 2020, run input 30000000]
+    where input = [9,3,1,0,8,4]
