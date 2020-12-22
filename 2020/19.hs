@@ -49,18 +49,36 @@ resolve (r:rs,att,kn)
     | isKnown kn r = resolve (rs, att, (expand kn r):kn)
     | otherwise = resolve (rs, r:att, kn)
 
-solve :: (Rules,Rules,Rules) -> Rules
-solve (_,refs,parts)
-    | todo == [] = done
-    | otherwise = solve ([], todo, done)
+solve :: (Rules,Rules,Rules) -> Int -> [String]
+solve (_,refs,parts) goal
+    | target == [] = solve ([], todo, done) goal
+    -- constructed strings are backwards..
+    | otherwise = map reverse $ contents $ snd $ head target
     where (_,todo,done) = resolve (refs,[],parts)
+          contents (Expanded a) = a
+          target = filter (\(tag,_) -> goal == tag) done
+
+part2 :: [String] -> [String] -> [String] -> Int
+part2 _ _ [] = 0
+part2 a31 a42 (w:ws)
+    | mod (length w) wlen /= 0 = part2 a31 a42 ws
+    | length fits /= 2 = part2 a31 a42 ws
+    | good fits = 1 + part2 a31 a42 ws
+    | otherwise = part2 a31 a42 ws
+    where wlen = length $ head a31
+          chunks [] = []
+          chunks r = (take wlen r) : chunks (drop wlen r)
+          fits = map (\a -> (head a, length a)) $ group $ map (\x -> (elem x a31, elem x a42)) $ chunks w
+          good (((False,True),n42):((True,False),n31):[]) = n42 > n31
+          good _ = False
 
 process :: (Rules, [String]) -> [String]
-process (m,ws) = [show $ length $ filter (\w -> elem w allowed0) ws]
+process (m,ws) = map show [length $ filter (\w -> elem w allowed0) ws, part2 allowed31 allowed42 ws]
     where (parts, refs) = partition isPart m
-          contents (_,Expanded a) = a
-          -- constructed strings are backwards..
-          allowed0 = map reverse $ contents $ head $ filter (\(t,_) -> t == 0) $ solve ([], refs, parts)
+          allowed0 = solve ([], refs, parts) 0
+          allowed31 = solve ([], refs, parts) 31
+          allowed42 = solve ([], refs, parts) 42
+
 
 -- long file, lets do IO
 main :: IO ()
