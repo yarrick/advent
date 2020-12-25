@@ -1,33 +1,72 @@
-import qualified Data.Sequence as S
-import Data.Foldable
+import Control.Monad
+import System.Environment
+import qualified Data.Vector.Unboxed as UV
+import qualified Data.Vector.Unboxed.Mutable as MV
 
-parse :: Int -> S.Seq Int
-parse n = S.fromList $ map (\c -> read [c]) $ show n
+set vec (n,v) = MV.write vec n v
+get vec n = MV.read vec (mod n $ MV.length vec)
 
-cycleUntil :: S.Seq Int -> Int -> S.Seq Int
-cycleUntil ss n
-    | first == n = ss
-    | otherwise = cycleUntil ((S.drop 1 ss) S.|> first) n
-    where first = S.index ss 0
+build len input = do
+    vec <- MV.replicate (succ len) (0 :: Int)
+    mapM_ (set vec) $ zip [1..len] [2..]
+    mapM_ (set vec) $ prep input (head input)
+    return vec
 
-move :: S.Seq Int -> S.Seq Int
-move ss = cycleUntil (S.take 1 cycled S.>< pickup S.>< S.drop 1 cycled) next
-    where curr = S.index ss 0
-          pickup = S.drop 1 $ S.take 4 ss
-          remain = (S.drop 4 ss) S.>< (S.take 1 ss)
-          next = S.index remain 0
-          target 1 = target (S.length ss+1)
-          target n
-            | elem c pickup = target c
-            | otherwise = c
-            where c = pred n
-          cycled = cycleUntil remain (target curr)
+target :: Int -> [Int] -> Int -> Int
+target 1 pickup len= target len pickup len
+target n pickup len
+    | elem c pickup = target c pickup len
+    | otherwise = c
+    where c = pred n
 
-moves :: Int -> S.Seq Int -> S.Seq Int
-moves 0 s = s
-moves n s = moves (pred n) (move s)
+-- takes extra unused arg to be used as a fold
+move vec val _ = do
+    fp <- get vec val
+    np <- get vec fp
+    lp <- get vec np
+    let pickup = [fp, np, lp]
+    let tgt = target val pickup (MV.length vec)
+    -- disconnect pickup from list
+    postpickup <- get vec lp
+    set vec (val, postpickup)
+    -- link pickup after target
+    posttgt <- get vec tgt
+    set vec (lp, posttgt)
+    set vec (tgt, fp)
+    return postpickup
 
-result :: S.Seq Int -> String
-result s = concatMap show $ tail $ toList $ cycleUntil s 1
+nval :: UV.Vector Int -> Int -> Int
+nval v n = v UV.! n
 
-run n = result $ moves 100 $ parse n
+parse :: String -> [Int]
+parse num = map (\c -> read [c]) num
+
+prep :: [Int] -> Int -> [(Int,Int)]
+prep [a] fst = [(a,fst)]
+prep (a:b:cs) fst = (a,b) : prep (b:cs) fst
+
+run input = do
+    vec <- build (length input) input
+    let val = head input
+    vv <- foldM (move vec) val [1..100]
+    iv <- UV.freeze vec
+    print $ concatMap show $ tail $ take (length input) $ iterate (nval iv) 1
+
+run2 input = do
+    let vlen = 1000000
+    vec <- build vlen input
+    -- fix linking to use extra numbers
+    set vec (last input, length input + 1)
+    set vec (vlen, head input)
+    let val = head input
+    vv <- foldM (move vec) val [1..10000000]
+    p1 <- get vec 1
+    p2 <- get vec p1
+    print $ p1 * p2
+
+-- use starting set of digits as first argument
+main = do
+    arg <- getArgs
+    let input = parse $ head arg
+    run input
+    run2 input
