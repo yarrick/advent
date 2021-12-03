@@ -1,3 +1,4 @@
+import Data.Char
 import Data.List
 
 closest :: Int -> (Int -> Int -> Bool) -> [[Int]] -> [Int]
@@ -18,12 +19,9 @@ picker op (a,b)
     | op a b = 0
     | otherwise = 1
 
-parse :: String -> [Int]
-parse num = map (\x -> read [x]) num
-
 process :: [String] -> [String]
 process rows = map (show.solve) [part1, part2]
-    where bits = map parse rows
+    where bits = map (map digitToInt) rows
           deci n = foldl (\a b -> 2*a+b) 0 n
           solve p = product $ map (deci.p bits) [(>), (<=)]
 
