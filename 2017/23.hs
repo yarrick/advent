@@ -60,11 +60,101 @@ run m@(ops,pc,_,_)
     | pc >= length ops = m
     | otherwise = run $ execute m (ops !! pc)
 
+factors :: Int -> [Int]
+factors n = [x | x <- [1..(div n 2)], mod n x == 0] ++ [n]
+
+nonprime :: Int -> Bool
+nonprime n = factors n /= [1,n]
+
 process :: [Op] -> [String]
-process ops = [show muls]
+process ops = map show [muls, length nonprimes]
     where (_,_,_,muls) = run (ops, 0, [], 0)
+          -- Step 2: Run first 10 instructions to set up b and c.
+          (_,_,reg,_) = run (take 10 ops, 0, [('a',1)], 0)
+          start = readReg reg 'b'
+          end = readReg reg 'c'
+          nonprimes = [x | x <- [start,(start+17)..end], nonprime x]
 
 -- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map (parse.words) . lines)
 
+{-
+Annotated input:
+
+set b 67            ; b = 67
+set c b             ; c = 67
+jnz a 2             ; if (a != 0) goto bigger
+jnz 1 5             ; goto loop
+mul b 100           ; big: b *= 100
+sub b -100000       ;      b += 100000
+set c b             ;      c = b
+sub c -17000        ;      c += 17000
+set f 1             ; loop: f = 1
+set d 2             ;       d = 2
+set e 2             ;    loop2: e = 2
+set g d             ;        loop3: g = d
+mul g e             ;               g *= e
+sub g b             ;               g -= b
+jnz g 2             ;               if (g != 0) goto keepF
+set f 0             ;                   f = 0
+sub e -1            ;       keepF:  e += 1
+set g e             ;               g = e
+sub g b             ;               g -= b
+jnz g -8            ;               if (g != 0) goto loop3
+sub d -1            ;           d += 1
+set g d             ;           g = d
+sub g b             ;           g -= b
+jnz g -13           ;           if (g != 0) goto loop2
+jnz f 2             ;       if (f != 0) goto skipH
+sub h -1            ;       h += 1
+set g b             ;skipH: g = b
+sub g c             ;       g -= c
+jnz g 2             ;       if (g != 0) goto incB
+jnz 1 3             ;       goto end
+sub b -17           ; incB: b += 17
+jnz 1 -23           ;       goto loop
+                    ; end:
+
+C version:
+
+#include <stdio.h>
+#include <stdint.h>
+
+int main() {
+    int64_t b,c,d,e,f,g,h;
+
+    b = 106700;
+    c = 123700;
+    h = 0;
+
+    do {
+        f = 1;
+        d = 2;
+        do {
+            e = 2;
+            do {
+                if (d * e == b) {
+                    f = 0;
+                    printf("b %ld = %ld * %ld\n", b,d,e);
+                }
+                e++;
+            } while (e != b);
+            d++;
+        } while (d != b);
+        if (f == 0) {
+            printf("inc H!\n");
+            h++;
+        }
+        g = b;
+        if (b != c) {
+            b += 17;
+            printf("next B\n");
+        }
+    } while (g != c);
+
+    printf("h=%ld\n", h);
+    return 0;
+}
+
+-}
