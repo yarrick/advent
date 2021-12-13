@@ -1,4 +1,4 @@
-import Data.Matrix
+import qualified Data.Map as M
 
 type Direction = (Int,Int)
 up = (-1,0)
@@ -25,25 +25,40 @@ move (r,c) (dr,dc) = (r+dr, c+dc)
 
 -- pos (r,c), direction, infections
 type Carrier = ((Int,Int), Direction, Int)
+type Grid = M.Map (Int,Int) Char
 
-step :: (Matrix Char, Carrier) -> (Matrix Char, Carrier)
-step (m, (pos@(r,c),dir,infects))
+getElem :: (Int,Int) -> Grid -> Char
+getElem pos m = M.findWithDefault '.' pos m
+
+setElem :: Char -> (Int,Int) -> Grid -> Grid
+setElem c pos m = M.insert pos c m
+
+step :: (Grid, Carrier) -> (Grid, Carrier)
+step (m, (pos,dir,infects))
     | infected = (setElem '.' pos m, mover goright id)
     | otherwise = (setElem '#' pos m, mover goleft succ)
-    where infected = '#' == getElem r c m
+    where infected = '#' == getElem pos m
           mover turn stats = (move pos (turn dir), turn dir, stats infects)
 
-insertInput :: Matrix Char -> (Int,Int) -> Char
-insertInput m (r,c)
-    | r <= 100 || c <= 100 = '.'
-    | r > 100 + nrows m || c > 100 + ncols m = '.'
-    | otherwise = getElem (r-100) (c-100) m
+step2 :: (Grid, Carrier) -> (Grid, Carrier)
+step2 (m, (pos,dir,infects))
+    | state == '.' = (setElem 'W' pos m, mover goleft id)
+    | state == 'W' = (setElem '#' pos m, mover id succ)
+    | state == '#' = (setElem 'F' pos m, mover goright id)
+    | state == 'F' = (setElem '.' pos m, mover (goright.goright) id)
+    where state = getElem pos m
+          mover turn stats = (move pos (turn dir), turn dir, stats infects)
 
-process :: Matrix Char -> [String]
-process m = [show infected]
-    where start = matrix 500 500 (insertInput m)
-          car = ((101 + div (nrows m) 2, 101 + div (ncols m) 2), up, 0)
-          (vm,(pos,dir,infected)) = (iterate step (start,car)) !! 10000
+parse rows = M.fromList $ concat $ map addrow $ zip [0..] cols
+    where cols = map (zip [0..]) rows
+          addrow (r,cvs) = map (\c -> ((r,fst c),snd c)) cvs
+
+process :: Grid -> [String]
+process m = map show [infected, inf2]
+    where (maxrow,maxcol) = fst $ last $ M.toList m
+          car = ((div maxrow 2, div maxcol 2), up, 0)
+          (vm,(pos,dir,infected)) = (iterate step (m,car)) !! 10000
+          (vm2,(p2,d2,inf2)) = (iterate step2 (m,car)) !! 10000000
 
 main :: IO ()
-main = interact (unlines . process . fromLists . lines)
+main = interact (unlines . process . parse . lines)
