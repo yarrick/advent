@@ -1,3 +1,4 @@
+import Control.DeepSeq
 import Data.List
 import qualified Data.Map as M
 
@@ -24,6 +25,7 @@ tencounts swap = M.fromList $ map cc $ M.toList swap
 
 score10 :: M.Map String [(Char,Int)] -> String -> [(Char,Int)]
 score10 _ (a:[]) = [(a,1)]
+score10 _ (a:'-':[]) = []
 score10 tcs (a:b:cs) = cc ++ (score10 tcs (b:cs))
     where cc = M.findWithDefault [] (a:b:[]) tcs
 
@@ -33,12 +35,24 @@ sumcount ps ((k,v):cs) = sumcount (M.alter (addval v) k ps) cs
     where addval val (Just n) = Just (val + n)
           addval val Nothing = Just val
 
+chunkcount :: M.Map String [(Char,Int)] -> String -> [[(Char,Int)]]
+chunkcount ps str
+    | end == [] = [score10 ps str]
+    | otherwise = (sumcount M.empty $ score10 ps (main ++ [head end, '-'])) : chunkcount ps end
+    where (main,end) = splitAt 20480 str
+
 process :: (String, Polymer) -> [String]
-process (st,swaps) = map show [scores$sumcount M.empty $score10 count10 st]
+process (st,swaps) = map show [ scores $ score10 count10 st,
+                                scores $ sumlist40 ]
         where swap10 = (iterate (nextgen swaps) swaps) !! 9
               count10 = tencounts swap10
+              t20 = transmute swap10 $ transmute swap10 st
+              c20 = tencounts $ nextgen swap10 swap10
+              count20 = deepseq c20 c20
+              sl40 = concat $ map (sumcount M.empty) $ chunkcount count20 t20
+              sumlist40 = deepseq sl40 sl40
               scores cs = (last ranking) - (head ranking)
-                where ranking = sort $ map snd cs
+                where ranking = sort $ map snd $ sumcount M.empty cs
 
 parse :: [String] -> (String, Polymer)
 parse (st:_:bs) = (st, M.fromList $ map (swaps.words) bs)
