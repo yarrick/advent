@@ -1,5 +1,7 @@
 import Data.Matrix
 import Data.Char
+import Data.List
+import Control.DeepSeq
 
 getxy :: Matrix a -> a -> (Int,Int) -> a
 getxy m fallback (x,y)
@@ -7,23 +9,23 @@ getxy m fallback (x,y)
   | otherwise = getElem x y m
 
 neighbors :: Matrix Int -> (Int,Int) -> [((Int,Int), Int)]
-neighbors m (x,y) = [(pos, getxy m 99999 pos) | pos <- [(x-1,y), (x,y-1), (x+1,y), (x,y+1)] ]
+neighbors m (x,y) = [((c,r), getxy m 99999 (c,r)) | (c,r) <- [(x-1,y), (x,y-1), (x+1,y), (x,y+1)],
+                     c >= 1 && c <= ncols m && r >= 1 && r <= nrows m ]
 
-update :: Matrix Int -> Matrix Int -> (Int,Int) -> Matrix Int
-update rs ss pos
-    | newsum < 99999 && newsum < cursum = setElem newsum pos ss
-    | otherwise = ss
+update :: Matrix Int -> (Matrix Int, [(Int,Int)]) -> (Int,Int) -> (Matrix Int, [(Int,Int)])
+update rs (ss,cs) pos
+    | newsum < 99999 && newsum < cursum = (setElem newsum pos ss, cs ++ npos)
+    | otherwise = (ss, cs)
     where rval = getxy rs 9999 pos
-          nvals = map snd $ neighbors ss pos
+          (npos,nvals) = unzip $ neighbors ss pos
           cursum = getxy ss 99999 pos
           newsum = rval + minimum nvals
 
-flow :: Matrix Int -> Matrix Int -> Matrix Int
-flow rs m
+flow :: Matrix Int -> Matrix Int -> [(Int,Int)] -> Matrix Int
+flow rs m cells
     | next == m = m
-    | otherwise = flow rs next
-    where cells = [(r,c) | r <- [1..nrows m], c <- [1..ncols m] ]
-          next = foldl (update rs) m cells
+    | otherwise = flow rs (deepseq next next) (nub nc)
+    where (next,nc) = foldl (update rs) (m,[]) cells
 
 solve :: Matrix Int -> Int
 solve starter = getxy summed 0 (1,1)
@@ -31,7 +33,7 @@ solve starter = getxy summed 0 (1,1)
           rs = nrows risk
           cs = ncols risk
           sums = setElem (getxy risk 0 (rs,cs)) (rs,cs) $ matrix rs cs (\_ -> 99999)
-          summed = flow risk sums
+          summed = flow risk sums (map fst $ neighbors sums (ncols sums, nrows sums))
 
 -- messier due to 1-based indexing
 grow :: Matrix Int -> Matrix Int
