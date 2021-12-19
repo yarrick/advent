@@ -1,10 +1,5 @@
 import Intcode
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 type Square = (Integer, Integer, Integer)
 
 newsquare :: [Integer] -> Square

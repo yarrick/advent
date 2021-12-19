@@ -1,11 +1,6 @@
 import Data.List
 import Intcode
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 amp :: [Integer] -> Integer -> Integer -> Integer
 amp mem index input = head $ outdata $ exec $ newstate mem [index, input]
 
@@ -55,14 +50,14 @@ runamps [] = []
 runamps (a:as) = ampout : (runamps $ feedamp as $ outdata ampout)
   where ampout = runamp a
 
-loopamps :: [State] -> Integer
+loopamps :: [State] -> [Integer]
 loopamps amps@(a:as)
-  | pc ampout < 0 = head (indata a)
+  | pc a < 0 = outdata ampout
   | otherwise = loopamps $ runamps $ feedamp amps $ outdata ampout
   where ampout = last amps
 
 test2 bytes settings = loopamps $ newamps mem settings
   where mem = parse bytes
 
-run2 bytes = maximum $ map loopamps $ map (newamps mem) $ permute [([],[5,6,7,8,9])]
+run2 bytes = maximum $ concatMap loopamps $ map (newamps mem) $ permute [([],[5,6,7,8,9])]
   where mem = parse bytes

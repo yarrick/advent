@@ -2,11 +2,6 @@ import Prelude hiding (Left,Right)
 import Intcode
 import Data.Matrix
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 getxy :: Matrix a -> (Int,Int) -> a -> a
 getxy m (x,y) fallback
   | x < 1 = fallback

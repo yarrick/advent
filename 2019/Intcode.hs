@@ -113,3 +113,6 @@ inputstr st str = st { indata = (indata st) ++ map (toInteger.ord) (str ++ "\n")
 
 outputstr :: State -> [String]
 outputstr st = lines $ map (chr.fromInteger) $ outdata st
+
+parse :: String -> [Integer]
+parse s = read $ "[" ++ s ++ "]"

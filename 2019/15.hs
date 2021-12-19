@@ -2,11 +2,6 @@ import Intcode
 import Data.Matrix
 import Data.List
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 needinput :: State -> Bool
 needinput st
   | length (indata st) == 0 && mod nextop 100 == 3 = True

@@ -2,11 +2,6 @@ import Data.List
 import Data.Matrix
 import Intcode
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 data Direction = PointUp | PointDown | PointRight | PointLeft deriving (Eq,Show)
 data Color = Black | White deriving (Eq,Show)
 
@@ -78,10 +73,8 @@ iswhite list (x,y)
   | elem (y,x) list = '#'
   | otherwise = ' '
 
-letters pos = mx
-  where mx = matrix 12 45 (iswhite pos)
-
 run2 bytes = map (\r -> getRow r (letters whitepos)) [1..12]
   where
     (donerobot@(_,s,sq), donestate) = paint (newrobot White, newhaltstate (parse bytes) [] haltcpu)
     whitepos = map (\(x,y,c,p) -> (x,2 - y)) $ filter (\(_,_,color,_) -> color == White) (s:sq)
+    letters pos = matrix 12 45 (iswhite pos)

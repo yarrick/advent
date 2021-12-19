@@ -1,10 +1,5 @@
 import Intcode
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 program :: Int -> [Integer] -> [Integer]
 program num mem = head mem : toInteger noun : toInteger verb : (drop 3 mem)
     where (noun, verb) = quotRem num 100

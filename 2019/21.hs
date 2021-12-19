@@ -1,18 +1,13 @@
 import Intcode
 import Data.Char
 
-parse :: String -> [Integer]
-parse [] = []
-parse w = read num : parse (drop 1 end)
-    where (num, end) = break (','==) w
-
 needinput :: State -> Bool
 needinput st
   | length (indata st) == 0 && mod nextop 100 == 3 = True
   | otherwise = False
   where nextop = (memory st) !! (fromInteger $ pc st)
 
-run bytes = lines $ map (chr.fromInteger) $ outdata $ exec state
+run bytes = last $ outdata $ exec state
   where state = newhaltstate (parse bytes) cmd needinput
         cmd = map (toInteger.ord) $ unlines $ [
           "NOT A J", -- jump if A is hole
@@ -23,7 +18,7 @@ run bytes = lines $ map (chr.fromInteger) $ outdata $ exec state
           "AND D J", -- unless D is hole
           "WALK"]
 
-run2 bytes = lines $ map (chr.fromInteger) $ outdata $ exec state
+run2 bytes = last $ outdata $ exec state
   where state = newhaltstate (parse bytes) cmd needinput
         cmd = map (toInteger.ord) $ unlines $ [
           "NOT B J", -- jump if B is hole
