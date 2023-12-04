@@ -9,13 +9,11 @@ process cards = map (show.sum) [map pscore matches, play2 $ zip (cycle [1]) matc
 
 play2 :: [(Int,Int)] -> [Int]
 play2 [] = [0]
-play2 ((n,ms):ps) = n : play2 rest
-    where rest = (map (\(a,b) -> (a+n,b)) $ take ms ps) ++ (drop ms ps)
+play2 ((n,ms):ps) = n : (play2 $ (map (\(a,b) -> (a+n,b)) $ take ms ps) ++ (drop ms ps))
 
 parse :: String -> ([Int], [Int])
 parse str = (map read wins, map read $ tail nums)
-    where (_:_:ns) = words str
-          (wins,nums) = break ("|"==) ns
+    where (wins,nums) = break ("|"==) $ drop 2 $ words str
 
 -- long file, lets do IO
 main :: IO ()
