@@ -2,27 +2,20 @@ import Data.Char
 import Data.List
 
 process :: ([Int], [[[Int]]]) -> [String]
-process (seed,nums) = map show [solve xlate seed, fst $ solve xlate2 $ exp seed]
-    where solve fn sd = minimum $ foldl fn sd nums
+process (seed,nums) = map solve [map (\n -> (n,n)) seed, exp seed]
+    where solve sd = show $ fst $ minimum $ foldl xlate sd nums
           exp [] = []
           exp (a:b:cs) = (a,a+b-1) : exp cs
 
-xlate :: [Int] -> [[Int]] -> [Int]
+xlate :: [(Int,Int)] -> [[Int]] -> [(Int,Int)]
 xlate [] _ = []
 xlate inp [] = inp
-xlate inp ((dstart:sstart:len:[]):xs) = map conv match ++ xlate out xs
-    where (match,out) = partition (\i -> i >= sstart && i < (sstart + len)) inp
-          conv x = x - sstart + dstart
-
-xlate2 :: [(Int,Int)] -> [[Int]] -> [(Int,Int)]
-xlate2 [] _ = []
-xlate2 inp [] = inp
-xlate2 ((start,end):is) xl@((dstart:sstart:len:[]):xs)
-    | start > last || end < sstart = xlate2 [(start,end)] xs ++ xlate2 is xl
-    | start >= sstart && end <= last = conv (start, end) : xlate2 is xl
-    | start >= sstart && end > last = conv (start, last) : xlate2 ((after,end):is) xl
-    | start < sstart && end <= last = conv (sstart, end) : xlate2 ((start,before):is) xl
-    | start < sstart && end > last = conv (sstart, last) : xlate2 ((start,before):(after,end):is) xl
+xlate ((start,end):is) xl@((dstart:sstart:len:[]):xs)
+    | start > last || end < sstart = xlate [(start,end)] xs ++ xlate is xl
+    | start >= sstart && end <= last = conv (start, end) : xlate is xl
+    | start >= sstart && end > last = conv (start, last) : xlate ((after,end):is) xl
+    | start < sstart && end <= last = conv (sstart, end) : xlate ((start,before):is) xl
+    | start < sstart && end > last = conv (sstart, last) : xlate ((start,before):(after,end):is) xl
     where before = sstart - 1
           last = sstart + len - 1
           after = sstart + len
