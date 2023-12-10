@@ -1,5 +1,6 @@
 # Find the binary name for the source file most recently changed.
 latest := $(shell ls -t *.hs | head -n 1 | cut -d. -f1)
+year := $(shell basename $(CURDIR))
 
 # Build and run latest with test case files from variable F
 # Example: make F="ex* input"
@@ -21,7 +22,7 @@ clean:
 # Depends on https://github.com/scarvalhojr/aoc-cli
 # and an existing session cookie.
 input:
-	aoc -Io -d ${latest} download
+	aoc -Io -y ${year} -d ${latest} download
 
 %: %.hs
 	ghc --make -O2 $<
