@@ -4,3 +4,5 @@
 *.swp
 # binaries named by day
 [0-2][0-9]
+input
+ex*
