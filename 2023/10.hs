@@ -106,4 +106,3 @@ parse _ = []
 
 main :: IO ()
 main = interact (unlines . process . lines)
-

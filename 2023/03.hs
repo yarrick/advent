@@ -36,7 +36,5 @@ ngroup start ds ((pos,dig):ps)
     | pos == start + (length ds) = ngroup start (ds++[dig]) ps
     | otherwise = (start,read ds) : ngroup pos [dig] ps
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . M.fromLists . lines)
-

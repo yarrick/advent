@@ -19,7 +19,5 @@ conv s
     | take 4 s == "nine" = '9' : conv (tail s)
     | otherwise = (head s) : conv (tail s)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

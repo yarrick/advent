@@ -29,7 +29,5 @@ parse (r:_:rs) = (map read $ tail $ words r, nrows [] rs)
             | isDigit (head s) = nrows (a++[map read $ words s]) ss
             | otherwise = nrows a ss
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

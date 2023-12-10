@@ -11,7 +11,5 @@ extend ss
     where diff (a:[]) = []
           diff (a:b:cs) = (b-a) : diff (b:cs)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

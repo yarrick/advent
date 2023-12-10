@@ -51,7 +51,5 @@ parse :: String -> (Hand,Int)
 parse row = ((hand, handtype hand), read score)
     where (hand:score:_) = words row
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)
-

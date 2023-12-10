@@ -8,7 +8,5 @@ race :: (Int, Int) -> Int
 race (t,d) = length $ filter (\k -> (t - k) * k > d) dists
     where dists = [1..t]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

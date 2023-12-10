@@ -15,7 +15,5 @@ parse :: String -> ([Int], [Int])
 parse str = (map read wins, map read $ tail nums)
     where (wins,nums) = break ("|"==) $ drop 2 $ words str
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

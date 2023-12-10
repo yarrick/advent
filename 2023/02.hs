@@ -35,7 +35,5 @@ chunk sep s
     where next = findIndex (\c -> elem c sep) s
           pos = fromMaybe 0 next
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)
-

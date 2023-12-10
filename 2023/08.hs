@@ -22,7 +22,5 @@ parse rows = (head rows, map (route.tokens) $ drop 2 rows)
     where tokens row = map (filter isAlphaNum) $ words row
           route (a:_:b:c:_) = (a, (b,c))
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-
