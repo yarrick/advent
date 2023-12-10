@@ -18,6 +18,8 @@ endif
 clean:
 	rm -f *.hi *.o [0-2][0-9]
 
+# Depends on https://github.com/scarvalhojr/aoc-cli
+# and an existing session cookie.
 input:
 	aoc -Io -d ${latest} download
 
