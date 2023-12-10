@@ -6,7 +6,7 @@ latest := $(shell ls -t *.hs | head -n 1 | cut -d. -f1)
 #
 # Input file is fetched again when latest file changed.
 all: ${latest}
-	@if [ "${latest}" != "$$(cat .latest.txt)" ]; then \
+	@if [ -f .latest.txt ] && [ "${latest}" != "$$(cat .latest.txt)" ]; then \
 		rm input; \
 		$(MAKE) input; \
 	fi
