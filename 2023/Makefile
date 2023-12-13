@@ -13,7 +13,7 @@ all: ${latest}
 	fi
 	@echo ${latest} > .latest.txt
 ifneq ($(F),)
-	@for i in `ls $F`; do echo "Running $$i"; time ./${latest} < $$i; done
+	@for i in `ls $F`; do echo "Running $$i"; time ./${latest} +RTS -M10g -RTS < $$i; done
 endif
 
 clean:
@@ -25,4 +25,4 @@ input:
 	aoc -Io -y ${year} -d ${latest} download
 
 %: %.hs
-	ghc --make -O2 $<
+	ghc --make -O2 -rtsopts $<
