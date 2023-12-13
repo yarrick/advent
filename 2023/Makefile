@@ -13,11 +13,11 @@ all: ${latest}
 	fi
 	@echo ${latest} > .latest.txt
 ifneq ($(F),)
-	@for i in `ls $F`; do echo "Running $$i"; time ./${latest} +RTS -M10g -RTS < $$i; done
+	@for i in `ls $F`; do echo "Running $$i"; time ./${latest} +RTS -M10g -s.rts_stats_$$i.log < $$i; done
 endif
 
 clean:
-	rm -f *.hi *.o [0-2][0-9]
+	rm -f *.hi *.o [0-2][0-9] .rts_stats*log
 
 # Depends on https://github.com/scarvalhojr/aoc-cli
 # and an existing session cookie.
