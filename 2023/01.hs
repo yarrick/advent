@@ -3,6 +3,7 @@ import Data.Char
 process :: [String] -> [String]
 process rows = map (show.sum.digits) [rows, map conv rows]
     where digits inp = map (read . pick . filter isDigit) inp
+          pick [] = "0"
           pick s = head s : last s : []
 
 conv :: String -> String
