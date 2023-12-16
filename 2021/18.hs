@@ -1,5 +1,4 @@
 import Data.Char
-import Control.Parallel
 
 data Sn = Num Int | Pair Sn Sn deriving (Eq)
 data Dir = L | R deriving (Eq,Show)
@@ -87,12 +86,9 @@ magnitude (Num n) = n
 magnitude (Pair a b) = 3*(magnitude a) + 2*(magnitude b)
 
 process :: [Sn] -> [String]
-process nums = map show [magnitude summed, maximum $ psum pairs]
+process nums = map show [magnitude summed, maximum $ map magnitude pairsums]
     where summed = foldl1 add nums
-          pairs = [ (a,b) | a <- nums, b <- nums, a /= b]
-          psum [] = []
-          psum ((a,b):cs) = s `par` s : psum cs
-            where s = magnitude $ add a b
+          pairsums = [ add a b | a <- nums, b <- nums, a /= b]
 
 main :: IO ()
 main = interact (unlines . process . (map (head.fst.parse [])) . lines)
