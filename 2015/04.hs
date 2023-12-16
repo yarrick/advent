@@ -1,28 +1,20 @@
-import Data.ByteString.Char8 as BS
-import Crypto.Hash.MD5 as MD5
+import qualified Data.ByteString.Char8 as BS
+import Crypto.Hash
 import Data.Char
-import Text.Printf
-
-hexify :: String -> String
-hexify [] = []
-hexify (c:cc) = printf "%02X" (ord c) ++ hexify cc
 
 md5 :: String -> String
-md5 str = hexify $ BS.unpack $ MD5.hash $ BS.pack str
-
-search :: String -> Integer -> Integer
-search prefix num
-	| Prelude.take 5 md5sum == "00000" = num
-	| otherwise = search prefix (num + 1)
-	where
-		md5sum = md5 $ prefix ++ show num
-
---part 2
+md5 str = show $ md5 $ BS.pack str
+    where md5 s = hash s :: Digest MD5
 
 searchx :: String -> Integer -> Int -> Integer
 searchx prefix num count
-	| Prelude.take count md5sum == zeros = num
-	| otherwise = searchx prefix (num + 1) count
-	where
-		md5sum = md5 $ prefix ++ show num
-		zeros = Prelude.take count $ repeat '0'
+    | take count md5sum == zeros = num
+    | otherwise = searchx prefix (num + 1) count
+    where
+        md5sum = md5 $ prefix ++ show num
+        zeros = take count $ repeat '0'
+
+process (row:_) = map show [searchx row 0 5, searchx row 0 6]
+
+main :: IO ()
+main = interact (unlines . process . lines)
