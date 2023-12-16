@@ -45,9 +45,8 @@ isNorth :: (Int,String) -> Bool
 isNorth (val,str) = isInfixOf "northpole" str
 
 process :: [String] -> [String]
-process rows = (show $ sum $ map fst checked) : (map show $ filter isNorth $ map decrypt checked)
+process rows = map (show.sum.map fst) [checked, filter isNorth $ map decrypt checked]
   where checked = filter (\a -> fst a > 0) $ map (check . parse) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
