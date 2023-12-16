@@ -1,5 +1,5 @@
-import Data.List (sort, delete)
-import Data.Maybe (fromJust)
+import Data.List
+import Data.Maybe
 
 parse :: [String] -> [(String, [(String, Int)])]
 parse [] = []
@@ -9,8 +9,8 @@ chunk :: [(String, [(String, Int)])] -> [(String, [(String, Int)])]
 chunk [] = []
 chunk (a:[]) = [a]
 chunk (prev@(a,b):next@(c,d):ee)
-	| a == c = chunk $ (a,b++d):ee
-	| otherwise = prev : (chunk $ next:ee)
+    | a == c = chunk $ (a,b++d):ee
+    | otherwise = prev : (chunk $ next:ee)
 
 permutation :: Eq a => [a] -> [[a]]
 permutation []= [[]]
@@ -22,13 +22,11 @@ get list x = fromJust $ lookup x list
 distance :: [(String, [(String,Int)])] -> [String] -> Int
 distance _ (a:[]) = 0
 distance table (from:to:next) = (get dd to) + distance table (to:next)
-	where dd = get table from
+    where dd = get table from
 
--- brute force, 40k combinations
-run :: String -> Int
-run str = minimum $ map (distance dists) $ permutation $ map fst dists
-	where dists = chunk $ sort $ parse $ words str
+process rows = map show [minimum lengths, maximum lengths]
+    where dists = chunk $ sort $ parse $ words rows
+          lengths = map (distance dists) $ permutation $ map fst dists
 
-run2 :: String -> Int
-run2 str = maximum $ map (distance dists) $ permutation $ map fst dists
-	where dists = chunk $ sort $ parse $ words str
+main :: IO ()
+main = interact (unlines . process)
