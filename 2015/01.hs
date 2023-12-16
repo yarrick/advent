@@ -25,3 +25,8 @@ baseStep :: Integer -> Integer -> String -> Integer
 baseStep x s dd
   | x == -1    = s
   | otherwise  =  bsteps x s dd
+
+process (row:_) = map show [floors row, basement row]
+
+main :: IO ()
+main = interact (unlines . process . lines)
