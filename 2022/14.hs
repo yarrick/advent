@@ -43,7 +43,7 @@ solve rows = fst $ spill m 0 $ transl (500,0)
           m = draw depth width $ map (map transl) rows
 
 process :: [[(Int,Int)]] -> [String]
-process rows = map show [solve rows, solve (floor:rows)]
+process rows = map show [pred $ solve rows, solve (floor:rows)]
     where depth = succ $ succ $ maximum $ map snd $ concat rows
           floor = [(500-(2*depth),depth),(500+(2*depth),depth)]
 
