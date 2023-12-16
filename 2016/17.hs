@@ -1,14 +1,13 @@
 import Prelude hiding (Left,Right)
-import Crypto.Hash.MD5
-import Data.ByteString.Base16
-import Data.ByteString.Builder
-import qualified Data.ByteString.Char8 as C8
+import Crypto.Hash
+import qualified Data.ByteString.Char8 as B
 import Data.List
 
 data Direction = Up | Down | Left | Right deriving (Show, Eq)
 
 md5 :: String -> String
-md5 str = C8.unpack $ encode $ hashlazy $ toLazyByteString $ string8 str
+md5 str = show $ md5hash $ B.pack str
+    where md5hash s = hash s :: Digest MD5
 
 open :: String -> String -> [Direction]
 open key path = map fst $ filter snd $ zip [Up,Down,Left,Right] $ map opened $ take 4 $ md5 (key ++ path)
@@ -27,5 +26,8 @@ paths key cur@(pos,path)
   where p = filter (\((x,y),_) -> valid x && valid y) $ map (pass cur) $ open key path
         valid n = n >= 0 && n < 4
 
-run key = snd $ head $ sort [ (length p, p) | p <- paths key ((0,0),"") ]
-run2 key = length $ snd $ head $ reverse $ sort [ (length p, p) | p <- paths key ((0,0),"") ]
+process (row:_) = [snd $ head walked, show $ length $ snd $ head $ reverse walked]
+    where walked = sort [ (length p, p) | p <- paths row ((0,0),"") ]
+
+main :: IO ()
+main = interact (unlines . process . lines)

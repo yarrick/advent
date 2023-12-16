@@ -1,12 +1,10 @@
-import Crypto.Hash.MD5
-import Data.ByteString.Base16
-import Data.ByteString.Builder
-import qualified Data.ByteString.Char8 as C8
-import qualified Data.ByteString.Lazy  as L
+import Crypto.Hash
+import qualified Data.ByteString.Char8 as B
 import Data.List
 
 md5 :: String -> String
-md5 str = C8.unpack $ encode $ hashlazy $ toLazyByteString $ string8 str
+md5 str = show $ md5hash $ B.pack str
+    where md5hash s = hash s :: Digest MD5
 
 hexhash :: String -> Int -> String
 hexhash salt index = md5 $ salt ++ show index
@@ -49,3 +47,8 @@ hashloop n h = hashloop (n-1) $ md5 h
 
 run2 :: String -> Int
 run2 salt = (keys hash2016 salt) !! 63
+
+process (row:_) = map show [run row, run2 row]
+
+main :: IO ()
+main = interact (unlines . process . lines)
