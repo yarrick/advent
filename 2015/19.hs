@@ -1,11 +1,4 @@
-import System.IO
 import Data.List
-
-run file = do
-    handle <- openFile file ReadMode
-    contents <- hGetContents handle
-    putStr $ unlines $ process $ lines contents
-    hClose handle
 
 parse :: String -> (String,String)
 parse str = (head w, last w)
@@ -50,3 +43,6 @@ replace ss (to,from)
  | take lf ss == from = to ++ drop lf ss
  | otherwise = head ss : replace (tail ss) (to,from)
  where lf = length from
+
+main :: IO ()
+main = interact (unlines . process . lines)

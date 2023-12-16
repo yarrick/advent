@@ -69,6 +69,7 @@ bossattack g = g { health = health g - damage - penalty g }
 
 bossround :: Game -> [Game]
 bossround g
+  | health g <= penalty g = []
   | gamewon gg = [gg]
   | gamelost ggg = []
   | otherwise = playerround ggg
@@ -99,18 +100,18 @@ affordable g s = cost s <= mana g && not ( elem (sid s) $ map eid (effects g))
 paymana :: Game -> Int -> Game
 paymana g cost = g { mana = mana g - cost, used_mana = used_mana g + cost }
 
-newgame :: Int -> Int -> Int -> Int -> Game
-newgame phealth pmana bhealth bdamage = Game { health = phealth, mana = pmana, armor = 0,
-  penalty = 0, boss_health = bhealth, boss_damage = bdamage, effects = [], used_mana = 0, used_spells = [] }
+newgame :: Int -> Int -> Int -> Int -> Int -> Game
+newgame phealth pmana bhealth bdamage pen = Game { health = phealth, mana = pmana, armor = 0,
+  penalty = pen, boss_health = bhealth, boss_damage = bdamage, effects = [], used_mana = 0, used_spells = [] }
 
 cheaper :: Game -> Game -> Ordering
 cheaper a b = compare (used_mana a) (used_mana b)
 
-run phealth pmana bhealth bdamage = used_mana $ head $ sortBy cheaper $ playerround game
-  where game = newgame phealth pmana bhealth bdamage
+run bhealth bdamage penalty = used_mana $ head $ sortBy cheaper $ playerround game
+  where game = newgame 50 500 bhealth bdamage penalty
 
--- part 2
+process rows = map show [run hit dmg 0, run hit dmg 1]
+    where (hit:dmg:_) = map (read.last.words) rows
 
-run2 phealth pmana bhealth bdamage = used_mana $ head $ sortBy cheaper $ playerround game
-  where game = (newgame phealth pmana bhealth bdamage) { penalty = 1 }
-
+main :: IO ()
+main = interact (unlines . process . lines)

@@ -19,8 +19,8 @@ parse ("jio":reg:off:ss) = Jumper (JumpOdd (head reg) (getint off)) : parse ss
 
 domath :: (Int -> Int) -> Char -> [(Char,Int)] -> [(Char,Int)]
 domath fun c ((r,v):rr)
-	| r == c = (r, (fun v)) : rr
-	| otherwise = (r,v) : domath fun c rr
+    | r == c = (r, (fun v)) : rr
+    | otherwise = (r,v) : domath fun c rr
 
 apply :: MathOp -> [(Char,Int)] -> [(Char,Int)]
 apply (Half c) regs = domath (\x -> x `div` 2) c regs
@@ -29,8 +29,8 @@ apply (Incr c) regs = domath (+1) c regs
 
 condjump :: Int -> [(Char,Int)] -> (Int -> Bool) -> Char -> Int -> Int
 condjump pc regs fun reg val
-	| fun (fromJust $ lookup reg regs) = pc + val
-	| otherwise = pc + 1
+    | fun (fromJust $ lookup reg regs) = pc + val
+    | otherwise = pc + 1
 
 jump :: JumpOp -> Int -> [(Char,Int)] -> Int
 jump (Jump val) pc _ = pc + val
@@ -43,17 +43,16 @@ doInstr (Math m) pc regs = (pc + 1, apply m regs)
 
 step :: [Instr] -> Int -> [(Char,Int)] -> [(Char,Int)]
 step instr pc regs
-	| pc < 0 || pc >= (length instr) = regs
-	| otherwise = step instr newpc newregs
-	where
-		(newpc,newregs) = doInstr i pc regs
-		i = instr !! pc
+    | pc < 0 || pc >= (length instr) = regs
+    | otherwise = step instr newpc newregs
+    where
+        (newpc,newregs) = doInstr i pc regs
+        i = instr !! pc
 
-run :: String -> [(Char,Int)]
-run str = step instr 0 [('a',0),('b',0)]
-	where instr = parse $ words str
+process str = map show [run [('a',0),('b',0)], run [('a',1),('b',0)]]
+    where instr = parse $ words str
+          run vals = snd $ head $ filter (\(c,_) -> c == 'b') $ step instr 0 vals
 
---part 2
-run2 :: String -> [(Char,Int)]
-run2 str = step instr 0 [('a',1),('b',0)]
-	where instr = parse $ words str
+main :: IO ()
+main = interact (unlines . process)
+
