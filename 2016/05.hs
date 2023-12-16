@@ -1,11 +1,10 @@
-import Crypto.Hash.MD5
+import Crypto.Hash
 import qualified Data.ByteString.Char8 as B
-import qualified Data.Text as T
-import Data.HexString as H
 import Data.List
 
 md5sum :: String -> String
-md5sum str = T.unpack $ H.toText $ H.fromBytes $ hash $ B.pack str
+md5sum str = show $ md5 $ B.pack str
+    where md5 s = hash s :: Digest MD5
 
 bruteforce :: ([String],Int,Int) -> String -> ([String],Int,Int)
 bruteforce (code,count,goal) door
@@ -37,3 +36,8 @@ merge (code,prev) ((pos,c):cc)
 part2 :: String -> String
 part2 door = fst $ merge ("",-1) $ sortBy cmp $ conv $ getCode $ bruteforce ([],0,34) door
   where getCode (a,b,c) = map (\x -> (x!!5,x!!6)) a
+
+process (row:_) = [part1 row, part2 row]
+
+main :: IO ()
+main = interact (unlines . process . lines)
