@@ -21,6 +21,5 @@ process rows = map show [sum $ map (succ.getxy m 0) $ lows,
         lowpoint pos = all (>getxy m 0 pos) $ map snd $ neighbors m pos
         lows = filter lowpoint [(r,c) | r <- [0..nrows m-1], c <- [0..ncols m-1] ]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

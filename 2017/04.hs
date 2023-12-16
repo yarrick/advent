@@ -10,7 +10,5 @@ process :: [String] -> [String]
 process rows = map (show.length.filter id) [map run passes, map run2 passes]
     where passes = map words rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

@@ -30,7 +30,6 @@ process rows = map (show.score) [head result, last result]
     where (guesses,boards) = parse rows
           result = bingo boards guesses 1
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
 

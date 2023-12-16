@@ -26,6 +26,5 @@ process rows = map show $ dups (0,claimids) $ sort $ concatMap squares claims
   where claims = map parse rows
         claimids = map (\(cid,_,_) -> cid) claims
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

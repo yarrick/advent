@@ -48,6 +48,5 @@ process (offs:schedule:xs) = map show [snd $ head waits, divisor * (fst $ foldl1
           cycles = map (findCyc divisor) $ tail limits
           lines = map line cycles
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

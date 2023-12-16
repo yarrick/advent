@@ -54,6 +54,5 @@ process rows = map show [score 5, score 18]
     where result = iterate (play (map parse rows)) [".#.", "..#", "###"]
           score n = length $ filter (=='#') $ concat (result !! n)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

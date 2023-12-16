@@ -36,7 +36,5 @@ process :: (Int,Int,[((Int,Int),Dir)]) -> [String]
 process (rows,cols,scs) = [show $ flow 0 (rows,cols,dirmap East,dirmap South)]
     where dirmap dir = M.fromList $ filter (\(_,t) -> t == dir) scs
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

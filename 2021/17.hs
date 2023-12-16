@@ -24,7 +24,5 @@ parse str = ([(nums!!0)..(nums!!1)],[(nums!!2)..(nums!!3)])
           isnum c = isDigit c || c == '-'
           nums = map read $ filter (\n -> isnum (head n)) ns
 
--- not so long file, lets do IO anyway
 main :: IO ()
 main = interact (unlines . process . parse . head . lines)
-

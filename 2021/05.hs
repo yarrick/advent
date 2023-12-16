@@ -24,7 +24,6 @@ process rows = map (show . solve) [ filter hvline vents, vents ]
           solve = length . filter (\n -> length n > 1) . group . sort . concat . (map draw)
           hvline (p1, p2) = fst p1 == fst p2 || snd p1 == snd p2
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
 

@@ -34,6 +34,5 @@ process (triplets,args) = [show $ length $ filter (>=3) $ map (length.snd) match
   where matching = map (\(ir,a,or) -> (head a,matches ir a or)) triplets
         opmap = map snd $ sortBy (\a b -> compare (fst a) (fst b)) $ deduce matching
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (parse []) . lines)

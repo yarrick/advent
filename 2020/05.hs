@@ -29,7 +29,5 @@ process :: [String] -> [String]
 process rows = map show [maximum $ map seatid $ seats, seatid $ empty seats]
     where seats = sort $ map (parse (0,127,0,7)) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

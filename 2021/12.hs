@@ -28,7 +28,6 @@ parse :: String -> (String, String)
 parse str = (a, tail b)
     where (a,b) = break ('-'==) str
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
 

@@ -38,6 +38,5 @@ process :: [String] -> [String]
 process rows = map (show . snd . last) [run nums 3, run nums 4]
     where nums = map read rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

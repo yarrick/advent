@@ -32,7 +32,5 @@ snaf n = map snf $ dropWhile (==0) $ reverse $ tune $ reverse $ divs n facts
 process :: [String] -> [String]
 process rows = [snaf $ sum $ map dec rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

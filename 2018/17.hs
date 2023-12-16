@@ -71,6 +71,5 @@ process input = map (show.length) [filter (\c -> elem c "~|") flowchart, filter 
           water = (0,500 + coloffset)
           flowchart = toList $ snd $ drip ([water],chart)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)

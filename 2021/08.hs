@@ -39,7 +39,5 @@ process :: [String] -> [String]
 process rows = map (show.sum) [map (length.filter easyDigit.snd) parsed, map decode parsed]
     where parsed = map parse rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

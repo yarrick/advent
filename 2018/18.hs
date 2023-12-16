@@ -48,6 +48,5 @@ fastmap m n
 process rows = [show $ score $ (iterate nextmap m) !! 10, show $ score $ fastmap m 1000000000]
   where m = fromLists rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

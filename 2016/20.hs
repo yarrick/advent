@@ -25,6 +25,5 @@ part2 rows = sum $ map (\(a,b) -> b-a+1) $ foldl blacklist [(0,4294967295)] $ ma
 process :: [String] -> [String]
 process rows = map show [part1 rows, part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

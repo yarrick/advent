@@ -17,7 +17,5 @@ process :: [String] -> [String]
 process rows = map (show . result) [anyanswer, allanswer]
     where result fun = sum $ map (length . fun) $ parse rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

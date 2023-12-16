@@ -15,6 +15,5 @@ process rows = [show $ foldl apply 0 ops,
   where apply n fn = fn n
         ops = map parse rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

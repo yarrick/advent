@@ -27,7 +27,5 @@ parse rows = (map point ps, map (fold.words) $ tail folds)
           fold ("fold":"along":a:_) = (head a, read $ drop 2 a)
           point r = read $ "(" ++ r ++ ")"
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

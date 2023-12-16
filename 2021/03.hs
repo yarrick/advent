@@ -25,7 +25,6 @@ process rows = map (show.solve) [part1, part2]
           deci n = foldl (\a b -> 2*a+b) 0 n
           solve p = product $ map (deci.p bits) [(>), (<=)]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
 

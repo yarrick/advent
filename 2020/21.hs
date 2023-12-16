@@ -44,7 +44,5 @@ process rows = [show $ length $ concat $ map fst leftover,
                 concat $ intersperse "," $ map fst $ sortBy (\(_,a) (_,b) -> compare a b) assigned]
     where (assigned, leftover) = deduce ([], rows)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)
-

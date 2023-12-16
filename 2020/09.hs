@@ -20,6 +20,5 @@ process rows = map show $ [firstmiss, minimum rangescore + maximum rangescore]
           firstmiss = getmiss nums 25
           rangescore = sumrange firstmiss 0 [] nums
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

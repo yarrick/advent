@@ -55,6 +55,5 @@ score m = length $ filter (==Taken) $ toList m
 process :: Matrix Spot -> [String]
 process m = map (show.score) [run m 4 adjacent, run m 5 seatline]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . fromLists . (map parse) . lines)

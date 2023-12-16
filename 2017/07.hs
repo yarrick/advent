@@ -49,7 +49,5 @@ process rows = [name top, show $ balanced top]
           name (Program n _ _ _) = n
           top = head $ construct unowned owners
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

@@ -58,7 +58,5 @@ parse rows = concatMap tagy $ zip [1..] $ map tagx rows
     where tagx r = map fst $ filter ((=='#').snd) $ zip [1..] r
           tagy (y,xs) = map (\x -> (x,y)) xs
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

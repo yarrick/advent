@@ -56,6 +56,5 @@ process bots = map show [length $ filter (\x -> x <= snd topbot) $ map (dist top
         cands = dig bots [foldl space [(0,0),(0,0),(0,0)] bots]
         top = filter (\(s,rr) -> s == fst (head cands) && single rr) cands
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)

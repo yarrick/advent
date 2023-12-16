@@ -17,7 +17,5 @@ prio c
 process :: [String] -> [String]
 process rows = map (show.sum.map (prio.head)) [map part1 rows, part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

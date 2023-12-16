@@ -96,7 +96,5 @@ parse rows = zip [0..] $ tgt "ABCD" $ concatMap wrap cols
           tgt str (Hallway c:cs) = Hallway c : tgt str cs
           tgt (s:ss) (Room _ rs:cs) = Room s rs : tgt ss cs
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

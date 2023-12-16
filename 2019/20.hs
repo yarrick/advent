@@ -128,6 +128,5 @@ lvljump ((from,to,side):js) (lvl,m)
   | lvl >= 199 = lvljump js (lvl,m)
   | otherwise = lvljump js (lvl,head $ mark [m] (0,from) ([(lvl+1,to)],999999))
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

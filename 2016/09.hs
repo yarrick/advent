@@ -15,7 +15,6 @@ expand (_:bb) = 1 + expand bb
 process :: [String] -> [String]
 process rows = map (show . expand) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process2 . lines)
 

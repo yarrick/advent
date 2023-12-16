@@ -114,6 +114,5 @@ process :: [(Int, Squad)] -> [String]
 process squads = map show [sum $ map (units.snd) winners, snd $ lowboost squads 0 32768 16384]
     where winners = battle squads
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

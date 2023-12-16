@@ -72,6 +72,5 @@ process (depth,(tr,tc)) = [show areaRisk, show $ minimum $ map end $ path ! (tr,
           end (Torch,t) = t
           end (_,t) = t+7
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

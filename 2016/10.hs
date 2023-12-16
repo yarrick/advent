@@ -64,6 +64,5 @@ process rows = map show [bid $ part1 start,
   where (botlines,vallines) = rowtypes ([],[]) rows
         start = foldl addChip (map getBot botlines) $ map getChip vallines
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

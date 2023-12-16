@@ -51,6 +51,5 @@ process :: [String] -> [String]
 process rows = (show $ sum $ map sum result) : map (map translate) result
   where result = foldl perform (make 50 6) $ map parse rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

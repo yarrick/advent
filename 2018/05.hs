@@ -17,6 +17,5 @@ process str = map show [postlen str, minimum lengths]
         chars = nub $ sort $ map toLower str
         lengths = map (\c -> postlen $ filter (\x -> toLower x /= c) str) chars
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . (concatMap process) . lines)

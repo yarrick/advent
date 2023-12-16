@@ -42,7 +42,5 @@ process rows = map (show . length . filter id) [map isValid passes,
     where passes = map parse rows
           passes2 = map parse2 rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

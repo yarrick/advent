@@ -32,7 +32,5 @@ process rows = map show [cycles, cycles2]
           (repeated, cycles) = run nums []
           (repeated2, cycles2) = run repeated []
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

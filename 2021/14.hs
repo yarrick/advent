@@ -58,7 +58,5 @@ parse :: [String] -> (String, Polymer)
 parse (st:_:bs) = (st, M.fromList $ map (swaps.words) bs)
     where swaps (a:_:b:_) = (a, head a : b)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

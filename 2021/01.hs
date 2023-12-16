@@ -10,7 +10,6 @@ process :: [String] -> [String]
 process rows = map show [solve 1 0 nums, solve 3 0 nums]
     where nums = map read rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
 

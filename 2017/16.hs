@@ -38,7 +38,5 @@ process :: [Move] -> [String]
 process moves = map show [head c, c !! (mod 1000000000 (length c) - 1)]
     where c = loop moves ['a'..'p'] []
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . concatMap parse . lines)
-

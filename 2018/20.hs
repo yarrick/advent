@@ -45,6 +45,5 @@ process rows = map show [maximum rooms, length $ filter (>=1000) rooms]
           (filled, _) = foldl move (start, [spos]) (head rows)
           rooms = filter (>=0) $ toList $ score filled
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

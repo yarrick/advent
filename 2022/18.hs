@@ -35,7 +35,5 @@ process cs = map (show.sum) [map (freesides m) cs, map (contact outer) cs]
 parse :: String -> [Int]
 parse s = read ("["++s++"]")
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

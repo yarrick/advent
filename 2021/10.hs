@@ -19,6 +19,5 @@ process rows = map show [sum corr, mid $ sort $ filter (>0) inc]
     where (corr,inc) = unzip $ map (decode []) rows
           mid ls = ls !! (div (length ls) 2)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

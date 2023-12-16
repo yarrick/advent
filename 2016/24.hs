@@ -82,6 +82,5 @@ process rows = map show [run (dists,paths), run2 (dists, paths)]
         paths = map (0:) $ permutations $ tail $  map fst $ trg
 
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

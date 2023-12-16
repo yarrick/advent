@@ -50,7 +50,5 @@ process rows = map show [solve rows, solve (floor:rows)]
 parse :: String -> [(Int,Int)]
 parse s = map (\c -> read ("("++c++")")) $ filter (isDigit.head) $ words s
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

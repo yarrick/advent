@@ -67,6 +67,5 @@ process :: [String] -> [String]
 process rows = map show [part1 input, part2 input]
   where input = prepare rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

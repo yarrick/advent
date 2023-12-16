@@ -43,7 +43,5 @@ parse str = (take 2 (head parts) == "on", pairs oddnums)
           pairs (a:b:cs) = (a,b) : pairs cs
           pairs [] = []
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

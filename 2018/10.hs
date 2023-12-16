@@ -28,6 +28,5 @@ process rows = [ show $ foldl (\m (r,c) -> setElem 7 (r+3-miny,c+3-minx) m) zero
         minx = minimum ypos
         zerom = zero (maximum ypos - minimum ypos + 6) (maximum xpos - minimum xpos + 6)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

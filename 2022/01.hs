@@ -7,7 +7,5 @@ process :: [String] -> [String]
 process rows = map show [head elves, sum $ take 3 elves]
     where elves = reverse $ sort $ map sum $ chunk rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

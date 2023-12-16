@@ -38,6 +38,5 @@ dist (ns,ew,_) = abs ns + abs ew
 process :: [(Char,Int)] -> [String]
 process m = map (show.dist) [foldl step (0,0,East) m, fst $ foldl step2 ((0,0,East),(1,10,East)) m]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)

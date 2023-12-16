@@ -58,7 +58,5 @@ parse :: String -> (String,(Int,[String]))
 parse s = (w !! 1, (read $ filter isDigit $ w !! 4, map (filter isAlpha) $ drop 9 w))
     where w = words s
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

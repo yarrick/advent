@@ -25,6 +25,5 @@ process rows = map show [ snd $ head $ sort $ map dist moved1, length moved2 ]
           moved2 = (iterate (collide . map step) points) !! 1000
           dist (num,(x,y,z),_,_) = (sum $ map abs [x,y,z], num)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

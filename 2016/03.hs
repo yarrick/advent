@@ -18,6 +18,5 @@ part2 (a:b:c:dd) = (length $ filter (==True) [ccheck 0,ccheck 1,ccheck 2]) + par
 process :: [String] -> [String]
 process rows = map show [part1 rows, part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

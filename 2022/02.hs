@@ -26,7 +26,5 @@ process :: [String] -> [String]
 process rows = map (\p -> show $ sum $ map p bouts) [play, play2]
     where bouts = map (\r -> (r !! 0, r !! 2)) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

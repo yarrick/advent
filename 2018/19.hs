@@ -24,6 +24,5 @@ solve (pcreg,code,regs) reg0 = sum $ divisors $ fromIntegral $ endregs !! 1
 process :: State -> [String]
 process st = map show [solve st 0, solve st 1]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

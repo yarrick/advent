@@ -16,7 +16,6 @@ process rows = map res [foldl drive (0,0,0) steps, foldl drive2 (0,0,0) steps]
     where steps = map (parse.words) rows
           res (a,b,_) = show $ a * b
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
 

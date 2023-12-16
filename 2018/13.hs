@@ -97,7 +97,5 @@ process m = map (show.crashsite) [snd $ run m cars, loc $ run2 m cars]
           cars = map (\(p,c) -> (p, startdir c, 0)) starts
           crashsite (r,c) = (c-1,r-1)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . fromLists . lines)
-

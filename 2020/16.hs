@@ -53,7 +53,5 @@ process rows = map show [sum $ invalids, product $ map (\v -> myticket !! v) dep
           assignments = decide candidates
           deps = map fst $ filter (\(t,name) -> dropWhile isDigit name == "departure") assignments
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

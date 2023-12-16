@@ -20,7 +20,5 @@ parse r
           a = take 2 nums
           b = drop 2 nums
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

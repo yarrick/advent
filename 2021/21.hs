@@ -60,7 +60,5 @@ sums = map (\n -> (head n, length n)) $ group $ sort rolls
 parse :: [String] -> [Int]
 parse rows = map (pred . read . last . words) rows
 
--- not so long file, lets do IO anyway
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

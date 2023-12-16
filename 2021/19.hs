@@ -54,6 +54,5 @@ coords str = (read x, read y, read (tail z))
     where (x,yz) = break (==',') str
           (y,z) = break (==',') $ tail yz
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

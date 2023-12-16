@@ -24,6 +24,5 @@ process row
   where inp = map read $ words row
         (tree,restdata) = build inp
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . (concatMap process) . lines)

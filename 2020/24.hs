@@ -41,6 +41,5 @@ process :: [String] -> [String]
 process m = [show $ length $ end, show $ length $ time end 0 100]
     where end = foldl flipper [] m
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

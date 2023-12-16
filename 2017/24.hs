@@ -29,7 +29,5 @@ process parts = map (show.maximum.(map score)) [bridges, filter (\(_,log) -> len
     where bridges = build (0,[]) parts
           maxlen = maximum $ map (\(_,log) -> length log) bridges
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)
-

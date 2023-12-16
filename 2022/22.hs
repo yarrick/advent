@@ -186,7 +186,5 @@ process (rs,path) = map (show.score board.solve) [npos1, npos2]
 parse :: [String] -> ([String], String)
 parse rows = (takeWhile ((>0).length) rows, last rows)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

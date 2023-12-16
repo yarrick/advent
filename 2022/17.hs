@@ -58,7 +58,5 @@ process s = map show [tower !! 2022, toplen]
           (biglen, rest) = divMod (1000000000000) llen
           toplen = (tower !! (llen+rest)) + ((biglen - 1) * ldiff)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . head . lines)
-

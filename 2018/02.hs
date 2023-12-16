@@ -16,6 +16,5 @@ process rows = [show $ length (filter id $ map (haslen 2) cdata) * length (filte
   where cdata = map (filter (\(_,len) -> len >= 2 && len <= 3).map (\cs -> (cs,length cs)).group.sort) rows
         haslen len row = length (filter (\(_,l) -> l == len) row) > 0
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

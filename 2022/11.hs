@@ -45,7 +45,5 @@ parse rows = (items, (lastint 3, lastint 4, lastint 5,
           op "*" = product
 
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

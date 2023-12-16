@@ -48,7 +48,5 @@ parse s = ((read a, read b), (read c, read d))
     where keep c = isDigit c || c == '-'
           (a:b:c:d:[]) = filter (\n -> length n > 0) $ map (filter keep) $ words s
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

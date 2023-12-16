@@ -50,6 +50,5 @@ process :: [String] -> [String]
 process rows = map show [calc part1, calc part2]
   where calc x = length $ filter (==True) $ map x rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

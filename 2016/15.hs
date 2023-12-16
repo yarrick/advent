@@ -31,6 +31,5 @@ part2 rows = show $ first $ map droptimes (discs ++ [(7,11,0)])
 process :: [String] -> [String]
 process rows = [part1 rows, part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

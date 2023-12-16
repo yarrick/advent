@@ -48,7 +48,5 @@ parse rows = (matrix (nrows mchar) (ncols mchar) val, filter (isUpper.fst) speci
             | otherwise = ord char - (ord 'a') + 1
             where char = getElem r c mchar
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

@@ -25,6 +25,5 @@ process sleeps = map show [guard * (snd $ topminute periods), (minute*guard2)]
         (sleeptime,guard,periods) = last $ sort sleeplog
         ((times,minute),guard2) = last $ sort $ map (\(_,g,p) -> (topminute p,g)) sleeplog
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (parse 0) . sort . lines)

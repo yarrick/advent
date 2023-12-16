@@ -47,7 +47,5 @@ process s = map (show.length.nub) [map snd trail1, map last trail2]
 parse :: String -> (Char, Int)
 parse r = (head r, read $ dropWhile (not . isDigit) r)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

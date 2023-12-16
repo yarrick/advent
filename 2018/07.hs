@@ -38,6 +38,5 @@ process basetime workers rows = [solve deps, show $ tsolve 0 workers timedeps []
         deps = map (\c -> (map fst $ filter (\(_,b) -> c == b) steps,c)) keys
         timedeps = map (\(dd,g) -> (dd,basetime + ord g - ord 'A' + 1,g)) deps
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . (process 60 5) . lines)

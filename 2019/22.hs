@@ -48,6 +48,5 @@ process rows =
  [show $ shuffle (map (parse.words) rows) 10007 2019,
   show $ part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

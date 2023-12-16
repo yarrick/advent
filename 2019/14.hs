@@ -64,7 +64,5 @@ part2 rows = show $ fst $ last $ filter (\(a,b) -> b <= 1000000000000) trillions
 process :: [String] -> [String]
 process rows = [part1 rows, part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

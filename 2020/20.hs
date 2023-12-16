@@ -138,6 +138,5 @@ process tiles = map show [product $ map (\((t,_,_),_) -> t) $ corners, hashes fo
           flips = turns ++ map hflip turns
           found = head $ filter (\(m,s) -> not $ null s) $ map (\m -> (m, snakes 0 $ pData m)) flips
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

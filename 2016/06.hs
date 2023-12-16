@@ -12,6 +12,5 @@ process rows = [map (decode most) rows, map (decode least) rows]
   where most (ca,va) (cb,vb) = compare vb va
         least (ca,va) (cb,vb) = compare va vb
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . transpose . lines)

@@ -62,7 +62,5 @@ part2 rows = foldl revapply "fbgdceah" $ parse $ concat $ map words $ reverse ro
 process :: [String] -> [String]
 process rows = [part1 rows, part2 rows]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

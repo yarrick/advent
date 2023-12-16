@@ -44,7 +44,5 @@ process :: [String] -> [String]
 process rows = map (show . length) [goodpass, filter valid2 goodpass]
     where goodpass = filter valid $ parse rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

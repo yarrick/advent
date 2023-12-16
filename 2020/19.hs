@@ -80,6 +80,5 @@ process (m,ws) = map show [length $ filter (\w -> elem w allowed0) ws, part2 all
           allowed42 = solve ([], refs, parts) 42
 
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse [] . lines)

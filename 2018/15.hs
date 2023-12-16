@@ -122,6 +122,5 @@ process world = map show [snd $ play blank 0 (-1) forces, run2 blank $ map (unit
     where forces = units world 3
           blank = erase world forces
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . fromLists . lines)

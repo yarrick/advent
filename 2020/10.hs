@@ -17,7 +17,5 @@ process nums = map (show . product) [map length $ group $ sort steps,
                                      map ways $ group steps]
     where steps = diffs $ [0] ++ sort nums ++ [3+maximum nums]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map read) . lines)
-

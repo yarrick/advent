@@ -39,6 +39,5 @@ pad ss
     | isDigit (head ss) = 'I':' ':(takeWhile isDigit ss) ++ (pad (dropWhile isDigit ss))
     | otherwise = (head ss):(pad (tail ss))
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map pad . lines)

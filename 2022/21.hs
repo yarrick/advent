@@ -56,7 +56,5 @@ parse :: String -> (String,[String])
 parse ss = (filter isAlpha $ head ws, tail ws)
     where ws = words ss
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . M.fromList . map parse . lines)
-

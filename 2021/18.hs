@@ -94,7 +94,5 @@ process nums = map show [magnitude summed, maximum $ psum pairs]
           psum ((a,b):cs) = s `par` s : psum cs
             where s = magnitude $ add a b
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map (head.fst.parse [])) . lines)
-

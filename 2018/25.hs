@@ -18,6 +18,5 @@ build cst star
 process :: [[Int]]  -> [String]
 process stars = [show $ length $ foldl build [] stars]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . (map parse) . lines)

@@ -15,7 +15,5 @@ process rows = map show [steps nums 0 0 succ, steps nums 0 0 nextjump]
             | x >= 3 = x-1
             | otherwise = x+1
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

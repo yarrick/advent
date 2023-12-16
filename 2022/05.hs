@@ -22,7 +22,5 @@ parse rows = (map stripnum $ transpose $ map (map (filter isAlphaNum)) towers,
           zerobase (num:from:to:[]) = (num,from-1,to-1)
           stripnum ss = reverse $ map head $ filter (\x -> length x > 0) $ drop 1 ss
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

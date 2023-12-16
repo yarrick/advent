@@ -27,7 +27,5 @@ parse (alg:_:state) = (map adapt alg, (matrix (extra + nrows mchar) (extra + nco
             | otherwise = adapt $ getElem rr cc mchar
             where (rr,cc) = (r - base, c - base)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

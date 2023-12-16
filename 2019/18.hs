@@ -201,6 +201,5 @@ part2 rows m starters keys
         allkeys = sort $ concat $ map (\(_,ks,_) -> ks) parts
         parts = map (\(st,ks,dists) -> (st,ks, map (filterdistkey allkeys) dists)) rawparts
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

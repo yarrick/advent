@@ -134,6 +134,5 @@ process rows = map show [solve state, solve $ addStep2 state]
                                          ("dilithium",Chip),("dilithium",Generator)]) : ss
           solve s = last $ take 100 $ iterate run [Path (0,1,s,[])]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

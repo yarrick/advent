@@ -39,7 +39,5 @@ parse path (line:ss)
     | otherwise = (path, Dir (path++[last w]) [] 0) : parse path ss
     where w = words line
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse [] . lines)
-

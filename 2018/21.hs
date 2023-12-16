@@ -16,7 +16,5 @@ zerocmp :: (Operation,[Int]) -> State -> [Int]
 zerocmp instr st = (regs !! 3) : zerocmp instr (pcreg,code,regs)
     where (pcreg,code,regs) = execuntil instr st
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

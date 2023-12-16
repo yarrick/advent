@@ -24,7 +24,5 @@ process rows = map show [part1 groups, part2 0 groups]
     where nums = sort $ map read rows
           groups = (nums, reverse nums)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

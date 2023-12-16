@@ -66,7 +66,5 @@ process rows = map show [length $ filter (includesColor gold) resolved, sum $ ma
           gold = "shiny_gold"
           goldBag = getByColor resolved gold
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

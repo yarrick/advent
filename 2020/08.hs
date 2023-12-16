@@ -50,6 +50,5 @@ process rows = map (show . acc) [runVM vm, tryVMs vm 0]
           vm = newVM ops
           acc (_,_,a,_) = a
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

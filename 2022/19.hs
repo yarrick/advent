@@ -83,7 +83,5 @@ parse s = (get 1, get 6, get 12, (get 18, get 21), (get 27, get 30))
     where w = map (filter isDigit) $ words s
           get n = read $ w !! n
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

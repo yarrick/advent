@@ -75,7 +75,6 @@ process ops = map show [muls, length nonprimes]
           end = readReg reg 'c'
           nonprimes = [x | x <- [start,(start+17)..end], nonprime x]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map (parse.words) . lines)
 

@@ -36,7 +36,5 @@ process rows = map show [length $ filter (visible m) cells,
           sights (r,c) dm = dist m (getElem r c m) 0 (move (r,c) dm) dm
           scenic pos = product $ map (sights pos) directions
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

@@ -109,7 +109,5 @@ process rows = map show [run1 $ machine p1ops 0, run2 (machine p2ops 0, machine 
     where p1ops = map (parse 1.words) rows
           p2ops = map (parse 2.words) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

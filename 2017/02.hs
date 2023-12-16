@@ -24,7 +24,5 @@ process :: [String] -> [String]
 process rows = [show $ run nums, show $ run2 nums]
     where nums = map parse rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

@@ -76,7 +76,5 @@ parse rows = ((length (head rows) - 1, length rows - 1), opening $ head indexed,
           rcs (r,cs) = map (\(c,ch) -> ((r,c),ch)) cs
           arrows rs = map (\(p,a) -> (p, arrow a)) $ filter (\(_,ch) -> elem ch "v^<>") rs
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)
-

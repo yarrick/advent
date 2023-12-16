@@ -53,6 +53,5 @@ process rows = map show [last $ sort $ map snd $ filter (\(cell,_) -> not $ elem
         cellcounts = zip [0..] $ foldl sumcells (take (length pos) $ repeat 0) mrows
         edgefields = nub $ sort $ concat $ filter (\a -> length a == 1) $ map fst $ edgecells mrows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

@@ -45,6 +45,5 @@ process (start,steps,ss) = map show [sum $ toList mm]
           mach = (start,steps,mem,5000,ss)
           (_,_,mm,_,_) = step mach
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

@@ -50,6 +50,5 @@ score (a,b)
 process :: (S.Seq Int, S.Seq Int) -> [String]
 process rows = map (show.score) [game rows, game2 rows []]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

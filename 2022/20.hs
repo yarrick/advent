@@ -34,7 +34,5 @@ process steps =  map (show.score) [swap steps $ mixed steps seq, swap s2 megamix
           s2 = map (*811589153) steps
           megamix = foldl (\s f -> f s) seq $ replicate 10 (mixed s2)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map read . lines)
-

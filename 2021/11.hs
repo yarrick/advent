@@ -45,6 +45,5 @@ process rows = map show [fst $ ticked !! 100,
   where m = fromLists $ map (map digitToInt) rows
         ticked = iterate step $ (0, m)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

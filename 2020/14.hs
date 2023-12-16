@@ -48,7 +48,5 @@ process :: [String] -> [String]
 process rows = map (show.sum) [map snd $ run cmds "X" [], map snd $ run2 cmds "X" [] ]
     where cmds = map (parse.words) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

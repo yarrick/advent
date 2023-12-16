@@ -20,7 +20,5 @@ stream depth (score,glen) Garbage (c:cs)
 process :: String-> [String]
 process row = map show $ stream 0 (0,0) Normal row
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process)
-

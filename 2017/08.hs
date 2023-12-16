@@ -64,7 +64,5 @@ process rows = map show [maximum $ map snd endreg, max]
     where ops = map (parse . words) rows
           (endreg,max) = run newMem ops
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

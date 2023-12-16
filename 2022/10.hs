@@ -23,7 +23,5 @@ parse :: String -> Instr
 parse "noop" = Noop
 parse ('a':'d':'d':'x':xs) = Addx (read xs)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
-

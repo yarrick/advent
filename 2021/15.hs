@@ -53,6 +53,5 @@ process :: [String] -> [String]
 process rows = map show [solve m, solve $ grow m]
   where m = fromLists $ map (map digitToInt) rows
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)

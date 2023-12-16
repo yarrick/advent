@@ -87,7 +87,5 @@ process ops = [solve reverse, solve id]
                                                                250000,10000,500,10000,500,500,500]
           solve fn = concatMap show $ head $ result [] 0 fn $ reverse fits
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map (parse.words) . lines)
-

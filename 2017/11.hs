@@ -35,6 +35,5 @@ process steps = map show [last dists, maximum dists]
     where distance (a,b,c) = sum $ map abs [a,b,c]
           dists = map (distance . compress) $ scanl walk (0,0,0) steps
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . concat . lines)

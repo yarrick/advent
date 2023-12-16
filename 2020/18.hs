@@ -47,6 +47,5 @@ process maths = map (show.eval.intersperse Plus) [res, res2]
     where res = map eval maths
           res2 = map (eval.addParen) maths
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . map (level 0. parse 0) . lines)

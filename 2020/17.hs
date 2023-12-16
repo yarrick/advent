@@ -74,6 +74,5 @@ process :: Matrix Bool -> [String]
 process m = map (show.score) [steps nextHyperSlice hyper 6, steps nextHyper hyper 6]
    where hyper = [(0,grow m)]
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . fromLists . (map parse) . lines)

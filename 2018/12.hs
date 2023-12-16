@@ -33,6 +33,5 @@ process (s,xforms) = [show $ sum $ map fst $ filter hasplant $ generations !! 20
         generations = iterate (step xforms) $ zip [0..] s
         (offset,iteration,stable) = loop generations 0
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . parse . lines)

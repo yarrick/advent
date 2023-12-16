@@ -36,7 +36,5 @@ process rows = map show [run 0 lvls, head gaps]
     where lvls = levels 0 $ map (parse . words) rows
           (_,gaps) = foldl gap (1,[0]) lvls
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . lines)
-

@@ -36,7 +36,5 @@ process m = [show $ filter isAlpha path, show $ length path]
           startPos = (1, fst $ head $ filter (\(_,c) -> c == '|') startCols)
           path = (m!startPos) : (walk m (step startPos down) down)
 
--- long file, lets do IO
 main :: IO ()
 main = interact (unlines . process . fromLists . lines)
-
