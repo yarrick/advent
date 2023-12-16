@@ -5,6 +5,7 @@ otherwise the input should be given to the suitable function inside ghci.
 
 ### Required cabal libraries
 
+* arithmoi
 * cryptonite
 * matrix
 * sequence
