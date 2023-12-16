@@ -1,16 +1,17 @@
+import Data.Bits hiding (And)
 import Data.Char (isDigit)
-import Data.Bits
+import Data.Maybe
 
 data Arg = Ref String | Val Int deriving (Show, Read)
 
 data Op = Not Arg | And Arg Arg |
-	Or Arg Arg | LShift Arg Int |
-	RShift Arg Int | Assign String | Value Int deriving (Show, Read)
+    Or Arg Arg | LShift Arg Int |
+    RShift Arg Int | Assign String | Value Int deriving (Show, Read)
 
 getArg :: String -> Arg
 getArg str@(a:aa)
-	| isDigit a = Val (read str)
-	| otherwise = Ref str
+    | isDigit a = Val (read str)
+    | otherwise = Ref str
 
 parse :: [String] -> [(String,Op)]
 parse [] = []
@@ -20,8 +21,8 @@ parse (arg1:"LSHIFT":arg2:_:dest:ss) = (dest, (LShift (getArg arg1) (read arg2))
 parse (arg1:"RSHIFT":arg2:_:dest:ss) = (dest, (RShift (getArg arg1) (read arg2))) : parse ss
 parse ("NOT":arg1:_:dest:ss) = (dest, Not (getArg arg1)) : parse ss
 parse (arg1@(a:aa):"->":dest:ss)
-	| isDigit a = (dest, (Value $ read arg1)) : parse ss
-	| otherwise = (dest, (Assign arg1)) : parse ss
+    | isDigit a = (dest, (Value $ read arg1)) : parse ss
+    | otherwise = (dest, (Assign arg1)) : parse ss
 
 
 get :: Maybe Op -> Maybe Int
@@ -76,7 +77,11 @@ solve :: [(String,Op)] -> [(String,Op)]
 solve ops = work ops ops
 
 -- run 5000 iterations of solving, should be enough
-run str = getval (Ref "a") $ head $ drop 5000 $ iterate solve ops
-	where ops = parse $ words str
+run str = fromJust $ getval (Ref "a") $ head $ drop 5000 $ iterate solve ops
+    where ops = parse $ words str
 
--- part 2 by just changing inputfile (x -> b)
+-- part 2 by just changing inputfile (x -> b), set x to answer from part 1
+process rows = [show $ run rows]
+
+main :: IO ()
+main = interact (unlines . process)
