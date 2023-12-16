@@ -1,5 +1,4 @@
 import Data.List
-import Debug.Trace as T
 
 pickPos :: [Int] -> Int
 pickPos state = snd $ head $ sortBy rank placed

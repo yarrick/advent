@@ -1,8 +1,6 @@
-import Data.Matrix hiding (trace)
+import Data.Matrix
 import Data.List
 import Data.Char
-import System.IO
-import Debug.Trace
 
 generate :: [String] -> Matrix ([Char],[Char],Int)
 generate input = matrix (length input) (length $ head input) (fill input)

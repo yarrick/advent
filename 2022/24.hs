@@ -1,7 +1,6 @@
 import Prelude hiding (Left, Right)
 import Data.List
 import qualified Data.Map as M
-import Debug.Trace
 
 data Dir = Up | Right | Down | Left deriving (Eq, Show)
 

@@ -1,5 +1,4 @@
 import Intcode
-import Debug.Trace
 
 needinput :: State -> Bool
 needinput st
