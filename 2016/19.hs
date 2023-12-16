@@ -21,4 +21,10 @@ play2 q
     where pop s = S.deleteAt (S.length s `div` 2) s
           rotate t = S.drop 1 t >< S.take 1 t
 
-winner2 n = play2 (S.fromList [1..n])
+winner2 n = S.index (play2 (S.fromList [1..n])) 0
+
+process rows = map show [winner num, winner2 num]
+    where num = read $ head rows
+
+main :: IO ()
+main = interact (unlines . process . lines)
