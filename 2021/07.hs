@@ -8,8 +8,14 @@ crabcost :: Int -> Int -> [Int]
 crabcost last pos = curr : crabcost curr (succ pos)
     where curr = last + pos
 
--- Add brackets around input: 3,4,3,1,2 -> [3,4,3,1,2]
-run :: [Int] -> (Int, Int)
-run pos = (solve [0..], solve (crabcost 0 0))
+run :: [Int] -> [Int]
+run pos = [solve [0..], solve (crabcost 0 0)]
     where ds cost = map (delta pos cost) [minimum pos..maximum pos]
           solve cost = fst $ head $ sort $ ds cost
+
+process :: [String] -> [String]
+process (row:_) = map show $ run nums
+    where nums = read $ "[" ++ row ++ "]"
+
+main :: IO ()
+main = interact (unlines . process . lines)

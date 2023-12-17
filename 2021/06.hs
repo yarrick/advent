@@ -12,7 +12,13 @@ age :: [Int] -> [Int]
 age (f:fs) = zipWith (+) born (fs ++ [0])
     where born = (replicate 6 0) ++ [f,0,f]
 
--- Add brackets around input: 3,4,3,1,2 -> [3,4,3,1,2]
-run :: [Int] -> (Int, Int)
-run fs = (breed !! 80, breed !! 256)
+run :: [Int] -> [Int]
+run fs = [breed !! 80, breed !! 256]
     where breed = map sum $ iterate age $ build fs
+
+process :: [String] -> [String]
+process (row:_) = map show $ run nums
+    where nums = read $ "[" ++ row ++ "]"
+
+main :: IO ()
+main = interact (unlines . process . lines)

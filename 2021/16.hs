@@ -67,8 +67,12 @@ eval (_, Operator oid pkts) = op $ map eval pkts
     where op = [sum, product, minimum, maximum, sum,
                 pcmp (>), pcmp (<), pcmp (==)] !! oid
 
-run :: String -> (Int,Int)
-run pktstr = (sumver pkt, eval pkt)
+run :: String -> [Int]
+run pktstr = [sumver pkt, eval pkt]
     where (pkt,trailer) = parse $ concatMap bin pktstr
 
+process :: [String] -> [String]
+process (row:_) = map show $ run row
 
+main :: IO ()
+main = interact (unlines . process . lines)
