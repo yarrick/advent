@@ -27,5 +27,9 @@ run :: [Int] -> Int -> Int
 run starts n = step hist (last starts) n (length starts+1)
     where hist = foldl store startHist $ zip starts [1..]
 
-main = print $ show $ [run input 2020, run input 30000000]
-    where input = [9,3,1,0,8,4]
+process :: [String] -> [String]
+process (row:_) = map show [run nums 2020, run nums 30000000]
+    where nums = read $ "[" ++ row ++ "]"
+
+main :: IO ()
+main = interact (unlines . process . lines)
