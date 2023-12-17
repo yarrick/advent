@@ -58,3 +58,9 @@ rungame (st,sq)
         ballcmp = compare (xpos 4) (xpos 3)
 
 run2 bytes = rungame $ newgame $ toInteger 2 : (tail $ parse bytes)
+
+process :: String -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

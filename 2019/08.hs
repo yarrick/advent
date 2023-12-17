@@ -21,4 +21,12 @@ decode layers
       pixel = head $ filter ('2'/=) $ map head layers
       tails = map tail layers
 
-run2 bytes = unwords $ chunk (decode $ chunk bytes 150) 25
+run2 bytes = map (map draw) $ chunk (decode $ chunk bytes 150) 25
+    where draw '0' = ' '
+          draw '1' = '#'
+
+process :: [String] -> [String]
+process (row:_) = [show $ run row] ++ (run2 row)
+
+main :: IO ()
+main = interact (unlines . process . lines)

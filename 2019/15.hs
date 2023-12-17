@@ -131,3 +131,9 @@ run2 bytes = maximum $ toList $ flow $ prepm endm
   where state = newhaltstate (parse bytes) [] needinput
         m = matrix 50 50 (\(i,j) -> -1)
         (endstate,(gx,gy),endm) = explore (state, (25,25), m) 1500
+
+process :: String -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

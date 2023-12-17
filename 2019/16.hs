@@ -32,3 +32,9 @@ run2 str = concat $ map show $ drop 101 $ take 109 $ reverse $ flow 0 newstr
    where offset = read $ take 7 str
          totlength = 10000 * length str
          newstr = reverse $ drop (offset-101) $ take totlength $ cycle $ map (\c -> read [c]) str
+
+process :: [String] -> [String]
+process (row:_) = [run row, run2 row]
+
+main :: IO ()
+main = interact (unlines . process . lines)

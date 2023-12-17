@@ -30,3 +30,8 @@ run2 bytes = last $ outdata $ exec state
           "OR T J",  -- or if A is hole
           "RUN"]
 
+process :: String -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

@@ -61,3 +61,9 @@ test2 bytes settings = loopamps $ newamps mem settings
 
 run2 bytes = maximum $ concatMap loopamps $ map (newamps mem) $ permute [([],[5,6,7,8,9])]
   where mem = parse bytes
+
+process :: String -> [String]
+process rows = map (show) [run rows, run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

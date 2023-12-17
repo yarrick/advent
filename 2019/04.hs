@@ -30,3 +30,12 @@ valid2 a = twosame num && increasing num && pair num
 
 pair :: String -> Bool
 pair num = elem 2 $ map length $ group num
+
+process :: [String] -> [String]
+process (row:_) = map show [count lo hi, count2 lo hi]
+    where (a,b) = break ('-'==) row
+          lo = read a
+          hi = read $ tail b
+
+main :: IO ()
+main = interact (unlines . process . lines)

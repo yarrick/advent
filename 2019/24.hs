@@ -86,3 +86,9 @@ run2 firststate = length $ filter ('#'==) $ concatMap (toList.snd) processed
         upper = take 110 $ zip [-110..] (repeat $ matrix 5 5 (\x -> '.'))
         lower = take 110 $ zip [1..] (repeat $ matrix 5 5 (\x -> '.'))
         processed = last $ take 201 $ iterate steplevels (upper ++ [(0,m)] ++ lower)
+
+process :: [String] -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process . lines)

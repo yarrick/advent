@@ -23,7 +23,7 @@ score (pos, as) = (length $ nub $ directions (pos, as), pos)
 best :: [((Int,Int),[(Int,Int)])] -> (Int,(Int,Int))
 best list = last $ sort $ map score list
 
-run str = best $ zip astr (repeat astr)
+run str = fst $ best $ zip astr (repeat astr)
   where astr = asteroids str
 
 -- part 2
@@ -56,8 +56,16 @@ shooter list
   | otherwise = concat (map fst parts) ++ shooter (map snd parts)
   where parts = map (splitAt 1) list
 
-run2 str = (\(x,y) -> x*100 + y) $ (shooter shootlist) !! 199
+run2 str
+  | length shootlist < 200 = 0
+  | otherwise = (\(x,y) -> x*100 + y) $ (shooter shootlist) !! 199
   where
     astr = asteroids str
     (_,pos) = best $ zip astr (repeat astr)
     shootlist = map snd $ sort $ map math $ hidden $ sort $ map range $ angle (pos, astr)
+
+process :: String -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

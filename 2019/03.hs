@@ -69,3 +69,9 @@ crosslen x@(((a,b),p):xs) y@(((c,d),q):ys)
 
 run2 :: String -> String -> Int
 run2 a b = minimum $ map (\(x,y,len) -> len) $ crosslen (wirelen a) (wirelen b)
+
+process :: [String] -> [String]
+process (a:b:_) = map show [run a b, run2 a b]
+
+main :: IO ()
+main = interact (unlines . process . lines)

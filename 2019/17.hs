@@ -88,3 +88,8 @@ run2 bytes = last $ outdata $ exec $ foldl inputstr state [main,a,b,c,"n"]
         c = "L,8,L,10,L,6,L,6"
         main = "A,B,A,C,B,C,B,A,C,B"
 
+process :: String -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

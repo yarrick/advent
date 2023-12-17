@@ -51,3 +51,9 @@ spin (pktless,states)
 
 run bytes = head $ drop 150000 $ iterate spin (0, map gen [0..50])
   where gen x = newstate (parse bytes) [x]
+
+process :: String -> [String]
+process rows = [show $ run rows]
+
+main :: IO ()
+main = interact (unlines . process)

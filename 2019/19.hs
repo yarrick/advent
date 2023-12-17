@@ -49,3 +49,9 @@ checkrow mem row startcol endcol n
 
 run2 bytes = x*10000+y
   where (x,y) = checkrow (parse bytes) 0 0 0 100
+
+process :: String -> [String]
+process rows = [show $ run rows, show $ run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

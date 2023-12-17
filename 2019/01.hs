@@ -15,3 +15,9 @@ calc2 tot mass
 
 fuel2 :: String -> Integer
 fuel2 weights = sum $ map (calc2 0 . read) $ words weights
+
+process :: String -> [String]
+process rows = map show [fuel rows, fuel2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

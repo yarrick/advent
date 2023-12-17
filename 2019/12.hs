@@ -55,3 +55,9 @@ findloop goal cur index
 
 run2 str = foldl1 lcm $ map (\m -> findloop m m 1) $ axes moons
   where moons = map moon $ zip [0..] $ map parse str
+
+process :: [String] -> [String]
+process rows = map show [run rows 1000, run2 rows]
+
+main :: IO ()
+main = interact (unlines . process . lines)

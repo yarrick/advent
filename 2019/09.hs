@@ -7,3 +7,9 @@ test bytes input = (take 100 (memory st), (outdata st))
 
 run :: String -> [Integer]
 run bytes = concatMap (\i -> outdata $ exec $ newstate (parse bytes) i) [[1],[2]]
+
+process :: String -> [String]
+process rows = map show (run rows)
+
+main :: IO ()
+main = interact (unlines . process)

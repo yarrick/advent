@@ -1,5 +1,6 @@
 import Data.List
 import Data.Matrix
+import qualified Data.Vector as V
 import Intcode
 
 data Direction = PointUp | PointDown | PointRight | PointLeft deriving (Eq,Show)
@@ -78,3 +79,9 @@ run2 bytes = map (\r -> getRow r (letters whitepos)) [1..12]
     (donerobot@(_,s,sq), donestate) = paint (newrobot White, newhaltstate (parse bytes) [] haltcpu)
     whitepos = map (\(x,y,c,p) -> (x,2 - y)) $ filter (\(_,_,color,_) -> color == White) (s:sq)
     letters pos = matrix 12 45 (iswhite pos)
+
+process :: String -> [String]
+process rows = [show $ run rows] ++ (map V.toList $ run2 rows)
+
+main :: IO ()
+main = interact (unlines . process)
