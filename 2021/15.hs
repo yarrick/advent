@@ -1,39 +1,40 @@
-import Data.Matrix
 import Data.Char
 import Data.List
-import Control.DeepSeq
+import Data.Matrix
+import qualified Data.Map as M
 
-getxy :: Matrix a -> a -> (Int,Int) -> a
+type Pos = (Int, Int)
+
+getxy :: Matrix a -> a -> Pos -> a
 getxy m fallback (x,y)
   | x <= 0 || y <= 0 || x > nrows m || y > ncols m = fallback
   | otherwise = getElem x y m
 
-neighbors :: Matrix Int -> (Int,Int) -> [((Int,Int), Int)]
-neighbors m (x,y) = [((c,r), getxy m 99999 (c,r)) | (c,r) <- [(x-1,y), (x,y-1), (x+1,y), (x,y+1)],
-                     c >= 1 && c <= ncols m && r >= 1 && r <= nrows m ]
+next :: Matrix a -> M.Map Pos Int -> Pos -> [(Pos, Int)]
+next m a (r,c) = map (\pos -> (pos, M.findWithDefault 99999 pos a)) valid
+    where cands = [(r-1,c), (r+1,c), (r,c-1), (r,c+1)]
+          valid = filter (\(r,c) -> r >= 1 && r <= nrows m && c >= 1 && c <= ncols m) cands
 
-update :: Matrix Int -> (Matrix Int, [(Int,Int)]) -> (Int,Int) -> (Matrix Int, [(Int,Int)])
-update rs (ss,cs) pos
-    | newsum < 99999 && newsum < cursum = (setElem newsum pos ss, cs ++ npos)
-    | otherwise = (ss, cs)
-    where rval = getxy rs 9999 pos
-          (npos,nvals) = unzip $ neighbors ss pos
-          cursum = getxy ss 99999 pos
+update :: Matrix Int -> Pos -> (M.Map Pos Int, [Pos], Int) -> (M.Map Pos Int, [Pos], Int)
+update a _ (b,[],n) = (b,[],n)
+update rs target (ss,pos:cs,curr)
+    | pos == target && newsum < tval = (M.insert pos newsum ss, [], newsum)
+    | newsum < 99999 && newsum < cursum = update rs target (M.insert pos newsum ss, sortBy lower $ cs ++ npos, curr)
+    | otherwise = update rs target (ss, cs, curr)
+    where rval = rs ! pos
+          (npos,nvals) = unzip $ next rs ss pos
+          cursum = M.findWithDefault 99999 pos ss
           newsum = rval + minimum nvals
-
-flow :: Matrix Int -> Matrix Int -> [(Int,Int)] -> Matrix Int
-flow rs m cells
-    | next == m = m
-    | otherwise = flow rs (deepseq next next) (nub nc)
-    where (next,nc) = foldl (update rs) (m,[]) cells
+          tval = M.findWithDefault 99999 target ss
+          lower a b = compare (M.findWithDefault 99999 a ss) (M.findWithDefault 99999 b ss)
 
 solve :: Matrix Int -> Int
-solve starter = getxy summed 0 (1,1)
+solve starter = score
     where risk = setElem 0 (1,1) starter
           rs = nrows risk
           cs = ncols risk
-          sums = setElem (getxy risk 0 (rs,cs)) (rs,cs) $ matrix rs cs (\_ -> 99999)
-          summed = flow risk sums (map fst $ neighbors sums (ncols sums, nrows sums))
+          sums = M.fromList [((rs,cs), risk ! (rs,cs))]
+          (summed,_,score) = update risk (1,1) (sums, map fst $ next risk sums (rs,cs), 99999)
 
 -- messier due to 1-based indexing
 grow :: Matrix Int -> Matrix Int
