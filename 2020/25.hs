@@ -14,3 +14,10 @@ run a b
     | otherwise = res a
     where (n,key) = crack [a,b] (loop 1 7 0)
           res k = snd $ (loop 1 k n) !! n
+
+process :: [String] -> [String]
+process rows = [show $ run a b]
+    where (a:b:_) = map read rows
+
+main :: IO ()
+main = interact (unlines . process . lines)
