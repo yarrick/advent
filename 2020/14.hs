@@ -17,7 +17,7 @@ asBin n = (take (36 - length res) $ cycle [0]) ++ res
           res = (reverse (conv n))
 
 valMask :: String -> Integer -> Integer
-valMask m n = (n .|. (asNum ('1',1,0) $reverse m)) .&. (asNum ('0',0,1) $ reverse m)
+valMask m n = (n .|. (asNum ('1',1,0) $ reverse m)) .&. (asNum ('0',0,1) $ reverse m)
 
 addrMask :: String -> [Integer] -> [[Integer]]
 addrMask [] [] = [[]]
