@@ -43,9 +43,10 @@ addParen (Num a:Mul:cs) = (Num a) : Mul : addParen cs
 addParen (a:cs) = a : addParen cs
 
 process :: [[Exp]] -> [String]
-process maths = map (show.eval.intersperse Plus) [res, res2]
+process maths = map (show.get.eval.intersperse Plus) [res, res2]
     where res = map eval maths
           res2 = map (eval.addParen) maths
+          get (Num a) = a
 
 main :: IO ()
 main = interact (unlines . process . map (level 0. parse 0) . lines)
