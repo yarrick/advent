@@ -17,8 +17,11 @@ process :: [String] -> [String]
 process rows = map show $ [firstmiss, minimum rangescore + maximum rangescore]
     where nums = map read rows
           getmiss n prelen = misses (reverse $ take prelen n) (drop prelen n)
-          firstmiss = getmiss nums 25
+          firstmiss = getmiss nums preamble
           rangescore = sumrange firstmiss 0 [] nums
+          preamble
+            | length nums < 25 = 5 -- for example data
+            | otherwise = 25
 
 main :: IO ()
 main = interact (unlines . process . lines)
