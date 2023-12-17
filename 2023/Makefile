@@ -3,21 +3,29 @@ days := $(shell ls -t [0-9][0-9].hs | cut -d. -f1)
 latest := $(firstword $(days))
 year := $(shell basename $(CURDIR))
 
-# Build latest
-build: ${latest}
+# Default to latest changed file.
+# Can be overridden: `make run day=20`
+day := ${latest}
+
+# Build binary for day
+build: ${day}
 	@
 
 # Build all
 all: ${days}
 	@
 
-# Build and run latest with example inputs
-test: ${latest}
-	@../.run.sh ./${latest} example/${latest}*
+# Build and run with example inputs
+test: ${day}
+	@../.run.sh ./${day} example/${day}*
 
-# Build and run latest with private input
-run: ${latest} input/${latest}
-	@../.run.sh ./${latest} input/${latest}
+# Build and run with private input
+run: ${day} input/${day}
+	@../.run.sh ./${day} input/${day}
+
+# Build and run with private input, print only elapsed time
+bench: ${day} input/${day}
+	@../.run.sh ./${day} input/${day} 2>&1 | grep "^real" | awk '{ print $$2 }'
 
 # Remove built files and logs
 clean:
