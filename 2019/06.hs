@@ -30,9 +30,16 @@ spot (Planet name _ suborbits) target
     maxlen = maximum $ map length results
 
 pathdiff :: [String] -> [String] -> Int
+pathdiff [] [] = 0
 pathdiff (x:xs) (y:ys)
   | x == y = pathdiff xs ys
   | otherwise = length (x:xs) + length (y:ys) - 2
 
 run2 mapdata = pathdiff (spot root "YOU") (spot root "SAN")
   where root = chain "COM" 0 $ map parse $ words mapdata
+
+process :: String -> [String]
+process rows = map show [run rows, run2 rows]
+
+main :: IO ()
+main = interact (unlines . process)
