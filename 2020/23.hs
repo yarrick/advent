@@ -1,5 +1,4 @@
 import Control.Monad
-import System.Environment
 import qualified Data.Vector.Unboxed as UV
 import qualified Data.Vector.Unboxed.Mutable as MV
 
@@ -50,7 +49,7 @@ run input = do
     let val = head input
     vv <- foldM (move vec) val [1..100]
     iv <- UV.freeze vec
-    print $ concatMap show $ tail $ take (length input) $ iterate (nval iv) 1
+    putStrLn $ concatMap show $ tail $ take (length input) $ iterate (nval iv) 1
 
 run2 input = do
     let vlen = 1000000
@@ -64,9 +63,8 @@ run2 input = do
     p2 <- get vec p1
     print $ p1 * p2
 
--- use starting set of digits as first argument
 main = do
-    arg <- getArgs
-    let input = parse $ head arg
+    content <- getContents -- read from stdin
+    let input = parse $ head $ words content
     run input
     run2 input
