@@ -19,10 +19,11 @@ expand :: Matrix Int -> ((Pos, Int, Dir) -> ([Dir], Int) -> [(Pos, ([Dir], Int))
                          [([Dir], Int)] -> [([Dir], Int)], ([Dir], Int) -> Bool) ->
           (Int,Int) -> (ResMap, [Pos], Int) -> (ResMap, [Pos], Int)
 expand _ _ _ (a,[],b) = (a,[],b)
-expand m (turn,comp,wins) target (a,pos:ps,best) = expand m (turn,comp,wins) target updated
+expand m (turn,comp,wins) target (a,pos:ps,best) = expand m (turn,comp,wins) target (nm, sortBy shorter pps, bs)
     where cands = concat [ turn n prev | n <- next m pos, prev <- a M.! pos ]
           saves = map (\(a,b) -> (a, regroup b)) $ regroup $ filter (\(_,(_,c)) -> c < best) cands
-          updated = foldl (update (comp,wins) target) (a,ps,best) saves
+          (nm,pps,bs) = foldl (update (comp,wins) target) (a,ps,best) saves
+          shorter a b = compare (minimum $ map snd (nm M.! a)) (minimum $ map snd (nm M.! b))
 
 turn1 :: (Pos, Int, Dir) -> ([Dir], Int) -> [(Pos, ([Dir], Int))]
 turn1 (np,loss,dir) (dirs, cost)
