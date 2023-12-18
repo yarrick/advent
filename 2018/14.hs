@@ -37,3 +37,10 @@ run2 :: Int -> Int
 run2 n = S.length seq - length wanted
   where wanted = [read [a] | a <- show n ]
         seq = flow2 wanted startRec
+
+process :: [String] -> [String]
+process (row:_) = [run num, show $ run2 num]
+    where num = read row
+
+main :: IO ()
+main = interact (unlines . process . lines)

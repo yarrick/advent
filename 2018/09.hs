@@ -1,3 +1,4 @@
+import Data.Char
 import qualified Data.Sequence as S
 
 type Circle = (S.Seq Int,Int)
@@ -30,3 +31,10 @@ game lastscore state marble
 
 run players lastscore = maximum playerscore
   where (circle, playerscore) = game lastscore ((S.singleton 0,0),replicate players 0) 1
+
+process :: [String] -> [String]
+process (row:_) = map show [run players lastscore, run players (lastscore*100)]
+    where (players:lastscore:_) = map read $ filter (\s -> isDigit (head s)) $ words row
+
+main :: IO ()
+main = interact (unlines . process . lines)

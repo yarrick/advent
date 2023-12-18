@@ -32,4 +32,11 @@ run serial = (\(v,(x,y,s)) -> (x,y)) $ last $ sort $ scorerows (newgrid serial) 
 
 -- Allowing bigger than 25x25 only makes it slower.
 -- Too many negative numbers for bigger squares to be better.
-run2 serial = last $ sort $ scorerows (newgrid serial) 1 25
+run2 serial = snd $ last $ sort $ scorerows (newgrid serial) 1 25
+
+process :: [String] -> [String]
+process (row:_) = map (filter (\c -> not $ elem c "()")) [show $ run num, show $ run2 num]
+    where num = read row
+
+main :: IO ()
+main = interact (unlines . process . lines)
