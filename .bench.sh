@@ -28,7 +28,7 @@ for d in $DAYS; do
             if [ "$y/$d" == "2019/25" ]; then
                 echo -n " Interactive |"
             else
-                TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/0m//' -e 's/m/m /'`
+                TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/0m/  /' -e 's/m/m /'`
                 echo -n " $TIME |"
             fi
         else
