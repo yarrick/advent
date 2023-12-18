@@ -18,15 +18,14 @@ run iter state
   | otherwise = run (iter+1) $ step state
   where ypos = map (fst.snd) state
 
-process rows = [ show $ foldl (\m (r,c) -> setElem 7 (r+3-miny,c+3-minx) m) zerom pos,
-                 show timer ]
+process rows = toLists (foldl (\m (r,c) -> setElem '#' (r+3-miny,c+3-minx) m) zerom pos) ++ [ show timer ]
   where (result,timer) = run 0 $ map parse rows
         pos = map (\((px,_),(py,_)) -> (py,px)) result
         ypos = map fst pos
         xpos = map snd pos
         miny = minimum ypos
         minx = minimum ypos
-        zerom = zero (maximum ypos - minimum ypos + 6) (maximum xpos - minimum xpos + 6)
+        zerom = matrix (maximum ypos - minimum ypos + 6) (maximum xpos - minimum xpos + 6) (\_ -> ' ')
 
 main :: IO ()
 main = interact (unlines . process . lines)
