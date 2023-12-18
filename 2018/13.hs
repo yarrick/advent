@@ -91,11 +91,11 @@ run2 m [a] = a
 run2 m cars = run2 m $ drive2 m (cars,[])
 
 process :: Matrix Char -> [String]
-process m = map (show.crashsite) [snd $ run m cars, loc $ run2 m cars]
+process m = map crashsite [snd $ run m cars, loc $ run2 m cars]
     where cells = [(r,c) | r <- [1..nrows m], c <- [1..ncols m] ]
           starts = filter (\(pp,c) -> elem c "<>^v") $ map (\p -> (p, m ! p)) cells
           cars = map (\(p,c) -> (p, startdir c, 0)) starts
-          crashsite (r,c) = (c-1,r-1)
+          crashsite (r,c) = show (c-1) ++ "," ++ show (r-1)
 
 main :: IO ()
 main = interact (unlines . process . fromLists . lines)
