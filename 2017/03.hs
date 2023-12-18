@@ -46,3 +46,10 @@ findgt n p
 
 part2 :: Int -> Int
 part2 n = findgt n 1
+
+process :: [String] -> [String]
+process (row:_) = map show [part1 num, part2 num]
+    where num = read row
+
+main :: IO ()
+main = interact (unlines . process . lines)

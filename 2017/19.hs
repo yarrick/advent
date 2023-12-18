@@ -31,7 +31,7 @@ walk m pos dir
           (newdir, nnc) = head options
 
 process :: Matrix Char -> [String]
-process m = [show $ filter isAlpha path, show $ length path]
+process m = [filter isAlpha path, show $ length path]
     where startCols = zip [1..] $ map (\c -> m ! (1,c)) [1..ncols m]
           startPos = (1, fst $ head $ filter (\(_,c) -> c == '|') startCols)
           path = (m!startPos) : (walk m (step startPos down) down)

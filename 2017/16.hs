@@ -35,7 +35,7 @@ loop moves line old
     where next = dance line moves
 
 process :: [Move] -> [String]
-process moves = map show [head c, c !! (mod 1000000000 (length c) - 1)]
+process moves = [head c, c !! (mod 1000000000 (length c) - 1)]
     where c = loop moves ['a'..'p'] []
 
 main :: IO ()

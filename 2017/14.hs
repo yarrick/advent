@@ -59,7 +59,11 @@ areas m count (p:ps)
           tag = count + 1
           tagged = mark tag m p
 
-run str = map show [length $ filter (>0) hashes, tags]
+process :: [String] -> [String]
+process (str:_) = map show [length $ filter (>0) hashes, tags]
     where hashes = concatMap (\s -> binhash $ str ++ "-" ++ show s) [0..127]
           m = fromList 128 128 $ map pred hashes
           (tags,mm) = areas m 0 $ cells m
+
+main :: IO ()
+main = interact (unlines . process . lines)

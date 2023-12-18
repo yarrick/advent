@@ -11,7 +11,10 @@ score pos s offs nums
     where curr = getpos nums pos
           hit = curr == getpos nums (pos+offs)
 
-run :: String -> [Int]
-run str = [score 0 0 1 nums,
-           score 0 0 (div (length nums) 2) nums]
-    where nums = [read [n] | n <- str]
+process :: [String] -> [String]
+process (row:_) = map show [run 1, run (div (length nums) 2)]
+    where nums = [read [n] | n <- row]
+          run n = score 0 0 n nums
+
+main :: IO ()
+main = interact (unlines . process . lines)

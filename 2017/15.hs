@@ -1,4 +1,5 @@
 import Data.Bits
+import Data.Char
 
 mulcycle :: Int -> Int -> Int
 mulcycle fact start = next
@@ -22,3 +23,10 @@ run astart bstart = same16 $ take 40000000 $ zip (aGen astart) (bGen bstart)
 run2 astart bstart = same16 $ take 5000000 $ zip avals bvals
     where avals = filter (andZero 3) $ aGen astart
           bvals = filter (andZero 7) $ bGen bstart
+
+process :: [String] -> [String]
+process rows = map show [run anum bnum, run2 anum bnum]
+    where (anum:bnum:_) = map (read.filter isDigit) rows
+
+main :: IO ()
+main = interact (unlines . process . lines)

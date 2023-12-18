@@ -24,3 +24,10 @@ fstep gap (zv,len,p) n
 run2 :: Int -> Int
 run2 n = zv
     where (zv,_,_) = foldl' (fstep n) (0,1,0) [1..50000000]
+
+process :: [String] -> [String]
+process (row:_) = map show [run num, run2 num]
+    where num = read row
+
+main :: IO ()
+main = interact (unlines . process . lines)
