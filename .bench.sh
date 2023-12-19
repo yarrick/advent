@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-YEARS=`seq 2017 2023`
+YEARS=`seq 2016 2023`
 DAYS=`seq 1 25`
 
 # Build markdown table of execution times
