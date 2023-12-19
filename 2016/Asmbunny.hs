@@ -87,10 +87,16 @@ runVM vm@(instr,pc,_,out)
   | pc < 0 = vm
   | pc >= length instr = vm
   | length out == 100 = vm
-  | length mul > 0 = runVM $ muler vm $ head mul
-  | length add > 0 = runVM $ adder vm $ head add
   | otherwise = runVM $ stepVM vm (instr !! pc)
+
+runVMopt :: VM -> VM
+runVMopt vm@(instr,pc,_,out)
+  | pc < 0 = vm
+  | pc >= length instr = vm
+  | length out == 100 = vm
+  | length mul > 0 = runVMopt $ muler vm $ head mul
+  | length add > 0 = runVMopt $ adder vm $ head add
+  | otherwise = runVMopt $ stepVM vm (instr !! pc)
   where
     add = findadd $ take 3 $ drop pc instr
     mul = findmul (drop 3 $ take 5 $ drop pc instr) add
-
