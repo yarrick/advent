@@ -128,11 +128,13 @@ run paths
           stepped = closeEnough $ step $ closeEnough $ nubBy same paths
 
 process :: [String] -> [String]
-process rows = map show [solve state, solve $ addStep2 state]
+process rows = map (decode.solve) [state, addStep2 state]
     where state = map parse rows
           addStep2 ((f,s):ss) = (f,s ++ [("elerium",Chip),("elerium",Generator),
                                          ("dilithium",Chip),("dilithium",Generator)]) : ss
           solve s = last $ take 100 $ iterate run [Path (0,1,s,[])]
+          decode (Result n:rs) = show n
+          decode _ = "Not in <100 moves"
 
 main :: IO ()
 main = interact (unlines . process . lines)
