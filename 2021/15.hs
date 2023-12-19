@@ -26,7 +26,8 @@ update rs target (ss,pos:cs,curr)
           cursum = M.findWithDefault 99999 pos ss
           newsum = rval + minimum nvals
           tval = M.findWithDefault 99999 target ss
-          lower a b = compare (M.findWithDefault 99999 a ss) (M.findWithDefault 99999 b ss)
+          lower a b = compare (prio a) (prio b)
+          prio (a,b) = (M.findWithDefault 99999 (a,b) ss) + abs ((fst target) - a) + abs ((snd target) - b)
 
 solve :: Matrix Int -> Int
 solve starter = score
