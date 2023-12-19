@@ -1,8 +1,10 @@
 import Asmbunny
 
-run str = reg
-  where (_,_,reg,_) =runVM $ newVM (readInstr $ words str) [0,0,0,0]
+run str start = reg
+  where (_,_,reg,_) = runVM $ newVM (readInstr $ words str) start
 
-run2 str = reg
-  where (_,_,reg,_) =runVM $ newVM (readInstr $ words str) [0,0,1,0]
+process :: String -> [String]
+process rows = map (show.head) [run rows [0,0,0,0], run rows [0,0,1,0]]
 
+main :: IO ()
+main = interact (unlines . process)

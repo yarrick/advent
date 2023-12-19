@@ -32,7 +32,6 @@ moves dir
 
 -- part 2
 
-
 distance2 str = (abs x) + (abs y)
  where (d,x,y,h) = walk2 (0,0,0,[(0,0)]) $ map decode $ words str
 
@@ -43,9 +42,9 @@ walk2 (dir,x,y,hist) ((move,len):mm)
  | otherwise = (newdir, cx, cy, hist)
   where newdir = turn dir move
         pos = map (step newdir (x,y)) (take len [1..])
-	(nx,ny) = last pos
-	collision = hits $ collide hist pos
-	(cx, cy, ct) = head collision
+        (nx,ny) = last pos
+        collision = hits $ collide hist pos
+        (cx, cy, ct) = head collision
 
 collide :: [(Int,Int)] -> [(Int,Int)] -> [(Int,Int,Bool)]
 collide _ [] = []
@@ -56,3 +55,9 @@ hits pos = take 1 $ dropWhile miss pos
 
 miss :: (Int,Int,Bool) -> Bool
 miss (a,b,c) = not c
+
+process :: [String] -> [String]
+process (row:_) = map show [distance row, distance2 row]
+
+main :: IO ()
+main = interact (unlines . process . lines)

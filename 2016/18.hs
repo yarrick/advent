@@ -21,3 +21,9 @@ safe [] = 0
 safe (b:bs) = (length $ filter not b) + safe bs
 
 run str n = safe $ take n $ rows $ parse str
+
+process :: [String] -> [String]
+process (row:_) = map show [run row 40, run row 400000]
+
+main :: IO ()
+main = interact (unlines . process . lines)

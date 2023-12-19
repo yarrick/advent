@@ -74,3 +74,9 @@ move2 x y (dx,dy)
  | otherwise = Just (nx,ny)
   where nx = x + dx
         ny = y + dy
+
+process :: String -> [String]
+process rows = [code rows, code2 rows]
+
+main :: IO ()
+main = interact (unlines . process)

@@ -24,3 +24,9 @@ csum a
   where first = chksum a
 
 run str len = csum $ dragon str len
+
+process :: [String] -> [String]
+process (row:_) = [run row 272, run row 35651584]
+
+main :: IO ()
+main = interact (unlines . process . lines)

@@ -11,3 +11,9 @@ onezero :: [Int] -> Bool
 onezero [] = True
 onezero (0:1:xs) = onezero xs
 onezero _ = False
+
+process :: String -> [String]
+process rows = [show $ run rows]
+
+main :: IO ()
+main = interact (unlines . process)

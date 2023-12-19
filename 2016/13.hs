@@ -76,3 +76,10 @@ run2 input = reachable solved
   where
     m = generate input 50 (999999,-1)
     solved = flow (mark m (1,1) 0)
+
+process :: [String] -> [String]
+process (row:_) = map show [run num, run2 num]
+    where num = read row
+
+main :: IO ()
+main = interact (unlines . process . lines)
