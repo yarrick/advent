@@ -6,7 +6,7 @@ do
     dir=$(dirname $f)
     file=$(basename $f)
     if [ -e "$f" ]; then
-        echo "Running $BIN with $f as input"
+        >&2 echo "Running $BIN with $f as input"
         time $BIN +RTS -M10g -s.rts_stats_${dir}_${file}.log < $f
     fi
 done
