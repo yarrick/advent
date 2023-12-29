@@ -77,11 +77,16 @@ solve :: [(String,Op)] -> [(String,Op)]
 solve ops = work ops ops
 
 -- run 5000 iterations of solving, should be enough
-run str = fromJust $ getval (Ref "a") $ head $ drop 5000 $ iterate solve ops
-    where ops = parse $ words str
+run :: [(String,Op)] -> Int
+run ops = fromJust $ getval (Ref "a") $ head $ drop 5000 $ iterate solve ops
 
--- part 2 by just changing inputfile (x -> b), set x to answer from part 1
-process rows = [show $ run rows]
+process rows = map show [p1, run $ map (tuneb p1) ops]
+    where ops = parse $ words rows
+          p1 = run ops
+
+tuneb :: Int -> (String,Op) -> (String,Op)
+tuneb val ("b",_) = ("b", Value val)
+tuneb _ op = op
 
 main :: IO ()
 main = interact (unlines . process)
