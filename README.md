@@ -1,7 +1,7 @@
 ## Solutions in haskell to adventofcode.com puzzles
 
-Solutions with a main method expect the input file to be piped to it,
-otherwise the input should be given to the suitable function inside ghci.
+To build, run `make` followed by the two-digit number for the day.
+To get the answer, execute the binary and send the input to stdin.
 
 ### Required cabal libraries
 
