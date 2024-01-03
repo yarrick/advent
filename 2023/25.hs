@@ -8,8 +8,15 @@ adjacent g (links, cands)
     | otherwise = picked : adjacent g (foldl bump links (g M.! picked),leftover)
     where dist c = M.findWithDefault 0 c links
           adjs = map (\c -> (sum $ map dist c, c)) cands
-          (picked:leftover) = map snd $ reverse $ sort adjs
+          (picked,leftover) = top ((-1,[]), [], adjs)
           bump m link = M.insert link (1+M.findWithDefault 0 link m) m
+
+top :: ((Int,[String]), [[String]], [(Int,[String])]) -> ([String], [[String]])
+top ((_,a),b,[]) = (a,b)
+top ((mx,val),prev,(sc,vv):vs)
+    | sc > mx && mx < 0 = top ((sc,vv),prev, vs)
+    | sc > mx = top ((sc,vv),val:prev, vs)
+    | otherwise = top ((mx,val),vv:prev, vs)
 
 cutphase g (mincut,cutlen)
     | mincut == 3 = (mincut,cutlen)
