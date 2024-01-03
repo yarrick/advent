@@ -1,20 +1,20 @@
-import Data.Matrix
 import Control.DeepSeq
+import qualified Data.Map as M
 
 -- value to write, ptr offset, next state
 type StateOp = (Int, Int, Char)
 type State = (Char, [StateOp])
 
 -- state, steps, mem, memptr, states
-type Machine = (Char,Int,Matrix Int,Int,[State])
+type Machine = (Char,Int,M.Map Int Int,Int,[State])
 
 step :: Machine -> Machine
 step m@(_,0,_,_,_) = m
 step (st,steps,mem,ptr,states) = step $ deepseq next next
     where state = fetch states st
-          val = getElem 1 ptr mem
+          val = M.findWithDefault 0 ptr mem
           (wval,offs,nst) = (snd state) !! val
-          next = (nst,pred steps,setElem wval (1,ptr) mem,ptr+offs,states)
+          next = (nst,pred steps,M.insert ptr wval mem,ptr+offs,states)
 
 fetch :: [State] -> Char -> State
 fetch sts c = head $ filter (\s -> fst s == c) sts
@@ -40,9 +40,8 @@ readDef (cur:wr:mov:cont:ndef) = (wval,ptrdir,nst) : readDef ndef
           nst = head $ (words cont) !! 4
 
 process :: (Char, Int, [State]) -> [String]
-process (start,steps,ss) = map show [sum $ toList mm]
-    where mem = zero 1 20000
-          mach = (start,steps,mem,5000,ss)
+process (start,steps,ss) = map show [sum $ M.keys mm]
+    where mach = (start,steps,M.empty,5000,ss)
           (_,_,mm,_,_) = step mach
 
 main :: IO ()
