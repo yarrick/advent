@@ -20,7 +20,8 @@ run _ [] = 0
 run delay ((d,lpos):lvls) = d * ((cycle lpos) !! delay) + run (succ delay) lvls
 
 pass :: Level -> Int -> Bool
-pass (lr,lvl) delay = (cycle lvl) !! (delay+lr) == 0
+pass (lr,lvl) delay = (lvl) !! n == 0
+    where n = mod (delay+lr) (length lvl)
 
 grow :: (Int,[Int]) -> Int -> [Int]
 grow (n,passes) size = sort [ (a+n*b) | a <- passes, b <- [0..factor-1]]
