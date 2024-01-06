@@ -77,8 +77,7 @@ build end (gm, maxg) (st@(cs,bots,res,min), prevbuy)
 
 
 score :: Int -> State -> [Int]
-score end st@((cid,_,_,_,_),_,_,_) = trace (show (cid,gs)) [cid, gs]
-    where gs = snd $ build end (M.empty,0) (st,[])
+score end st@((cid,_,_,_,_),_,_,_) = [cid, snd $ build end (M.empty,0) (st,[])]
 
 process :: [Costs] -> [String]
 process costs = map show [sum $ map product part1, product $ map last part2]
