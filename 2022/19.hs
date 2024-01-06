@@ -1,7 +1,11 @@
+import Control.DeepSeq
 import Data.Char
 import Data.List
+import Data.Foldable
+import qualified Data.Map as M
 
 data Kind = Ore | Clay | Obsidian | Geode | End deriving (Eq,Show,Ord)
+instance NFData Kind where rnf k = seq k ()
 
 -- id, ore cost, clay cost, obsidian cost, geode cost
 type Costs = (Int, Int, Int, (Int, Int), (Int, Int))
@@ -50,27 +54,31 @@ worth end (cs@(_,co,cc,(cobo,cobc),(cgo,cgob)),bots@(bo,bc,bob,_),res@(ro,rc,rob
     | otherwise = min < (end-2)
     where r23res b = (iterate (produce b) res) !! ((end-1) - min)
 
-step :: Int -> (State, [Kind]) -> [(State,[Kind])]
-step end (st@(cs,bots,res,min), prevbuy)
-    | prevbuy == [Ore,Clay] && any (hasbot bots) [Clay,Obsidian,Geode] == False = []
-    | hasbot bots Geode == False && prevbuy == [Ore,Clay,Obsidian] = []
-    | otherwise = map bought newbuys ++ [((cs,bots,nres,succ min),buys)]
-    where buys = filter (canbuy cs res) [Geode,Obsidian,Ore,Clay]
+build :: Int -> (M.Map State Int, Int) -> (State, [Kind]) -> (M.Map State Int, Int)
+build end (gm, maxg) (st@(cs,bots,res,min), prevbuy)
+    | min == end && geode res > maxg = (gm, geode res)
+    | min == end = (gm, maxg)
+    | prevbuy == [Ore,Clay] && any (hasbot bots) [Clay,Obsidian,Geode] == False = (gm, maxg)
+    | hasbot bots Geode == False && prevbuy == [Ore,Clay,Obsidian] = (gm, maxg)
+    | prevmax >= 0 = (gm,maxg)
+    | geode res + gprod < maxg = (gm,maxg)
+    | otherwise = (M.insert st nmaxg ngm, nmaxg)
+    where geode (_,_,_,gs) = gs
+          buys = filter (canbuy cs res) [Geode,Obsidian,Ore,Clay]
           newbuys = filter (worth end st) $ filter (\k -> not $ elem k prevbuy) buys
           bought k = (shop (cs,bots,nres,succ min) k, [])
           nres = produce bots res
+          nexts = map bought newbuys ++ [((cs,bots,nres,succ min),buys)]
+          grank ((_,ab,ar,_),_) ((_,bb,br,_),_) = compare (geode br) (geode ar)
+          (ngm,nmaxg) = foldl' (build end) (gm,maxg) $ sortBy grank $ deepseq nexts nexts
+          prevmax = M.findWithDefault (-1) st gm
+          remains = end - min
+          gprod = (remains * geode bots) + 2 * (sum [1..remains])
 
-walk :: Int -> [(State,[Kind])] -> [State]
-walk _ [] = []
-walk end (s:ss)
-    | age == end = fst s : walk end ss
-    | otherwise = walk end $ step end s ++ ss
-    where (_,_,_,age) = fst s
 
 score :: Int -> State -> [Int]
-score end st@((cid,_,_,_,_),_,_,_) = [cid,geodes]
-    where gnum (_,_,(_,_,_,gs),_) = gs
-          geodes = maximum $ 0 : (map gnum $ walk end [(st,[])] )
+score end st@((cid,_,_,_,_),_,_,_) = trace (show (cid,gs)) [cid, gs]
+    where gs = snd $ build end (M.empty,0) (st,[])
 
 process :: [Costs] -> [String]
 process costs = map show [sum $ map product part1, product $ map last part2]
