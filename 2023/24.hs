@@ -27,27 +27,26 @@ fdiv :: Int -> Int -> Float
 fdiv a b = (fromIntegral a) / (fromIntegral b)
 
 pairs :: [a] -> [(a,a)]
-pairs (a:[]) = []
+pairs [a] = []
 pairs (a:bs) = [(a,b) | b <- bs] ++ pairs bs
 
-xylineseg :: (Int,Int) -> Point -> Segment
-xylineseg (lo,hi) t@((x,y,z), (vx,vy,vz)) = ((x,y), (\((x,y,_),_) -> (x,y)) $ step 1 t)
+xylineseg :: Point -> Segment
+xylineseg ((x,y,z), (vx,vy,vz)) = ((x,y), (x+vx,y+vy))
 
-step :: Int -> Point -> Point
-step n ((x,y,z), (vx,vy,vz)) = ((x+n*vx,y+n*vy,z+n*vz), (vx,vy,vz))
+step :: Point -> Point
+step ((x,y,z), (vx,vy,vz)) = ((x+vx,y+vy,z+vz), (vx,vy,vz))
 
 process :: [Point] -> [String]
 process ps = [ show $ length xycross ]
     where box
-            | length ps < 10 = (7, 27) -- example
+            | length ps < 10 = (7, 27) -- For example data
             | otherwise = (200000000000000, 400000000000000)
-          xycross = crossing box $ pairs $ map (xylineseg box) ps
+          xycross = crossing box $ pairs $ map xylineseg ps
 
 parse :: String -> Point
 parse r = ((x,y,z), (ax,ay,az))
     where parts = map (filter (','/=)) $ words r
-          (x:y:z:_) = map read parts
-          (ax:ay:az:_) = map read $ drop 4 parts
+          (x:y:z:_:ax:ay:az:_) = map read parts
 
 main :: IO ()
 main = interact (unlines . process . map parse . lines)
