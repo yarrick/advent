@@ -6,10 +6,10 @@ reacts a b = a /= b && (toUpper a == b || toUpper b == a)
 
 chain :: String -> String -> String
 chain [] (s:ss) = chain [s] ss
-chain a [] = a
+chain a [] = reverse a
 chain prev (n:ns)
-  | reacts (last prev) n = chain (take (length prev - 1) prev) ns
-  | otherwise = chain (prev++[n]) ns
+  | reacts (head prev) n = chain (tail prev) ns
+  | otherwise = chain (n:prev) ns
 
 process :: String -> [String]
 process str = map show [postlen str, minimum lengths]
