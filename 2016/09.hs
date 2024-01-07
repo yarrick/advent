@@ -1,4 +1,3 @@
-
 parse :: String -> (Int,Int)
 parse str = (read a, read $ tail b)
   where (a,b) = break ('x'==) str
@@ -12,16 +11,13 @@ expand ('(':bb) = (rep * (length repstr)) + expand nstr
         nstr = drop count $ tail tt
 expand (_:bb) = 1 + expand bb
 
--- part 2
-
 expand2 :: String -> Int
 expand2 [] = 0
-expand2 ('(':bb) = expand2 expanded + expand2 nstr
+expand2 ('(':bb) = rep * (expand2 repstr) + expand2 nstr
   where (exp,tt) = break (')'==) bb
         (count,rep) = parse exp
         repstr = take count $ tail tt
         nstr = drop count $ tail tt
-        expanded = take (count*rep) (cycle repstr)
 expand2 (_:bb) = 1 + expand2 bb
 
 process :: [String] -> [String]
