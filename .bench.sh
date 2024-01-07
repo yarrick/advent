@@ -12,12 +12,12 @@ done
 
 echo -n "| Day |"
 for y in $YEARS; do
-    echo -n "   $y   |"
+    echo -n "   $y |"
 done
 echo
 echo -n "|-----|"
 for y in $YEARS; do
-    echo -n "---------:|"
+    echo -n "-------:|"
 done
 echo
 for d in $DAYS; do
@@ -28,7 +28,7 @@ for d in $DAYS; do
             if [ "$y/$d" == "2019/25" ]; then
                 echo -n " Interactive |"
             else
-                TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/^0m/  /' -e 's/m/m /'`
+                TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/^0m//' -e 's/\(m[0-9]\+\.[0-9]\)[0-9]\+/\1/'`
                 echo -n " $TIME |"
             fi
         else
