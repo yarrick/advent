@@ -1,16 +1,16 @@
+import qualified Data.Sequence as S
 import Data.List
 
-steps :: [Int] -> Int -> Int -> (Int -> Int) -> Int
+steps :: S.Seq Int -> Int -> Int -> (Int -> Int) -> Int
 steps jumps count pos fn
-    | pos >= length jumps = count
-    | otherwise = steps nextjumps (count+1) nextpos fn
-    where val = jumps !! pos
-          nextpos = pos + val
-          nextjumps = take pos jumps ++ [fn val] ++ drop (pos+1) jumps
+    | pos >= S.length jumps = count
+    | otherwise = steps nextjumps (count+1) (pos+val) fn
+    where val = S.index jumps pos
+          nextjumps = S.adjust fn pos jumps
 
 process :: [String] -> [String]
-process rows = map show [steps nums 0 0 succ, steps nums 0 0 nextjump]
-    where nums = map read rows
+process rows = map (show.steps nums 0 0) [succ, nextjump]
+    where nums = S.fromList $ map read rows
           nextjump x
             | x >= 3 = x-1
             | otherwise = x+1
