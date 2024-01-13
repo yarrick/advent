@@ -40,9 +40,6 @@ startpos hail aim t1
     where start = map pos $ zip hail aim
           pos ((p0,pv),rv) = fromIntegral p0 + t1 * fromIntegral (pv - rv)
 
-rdiv :: Ratio Int -> Ratio Int -> Ratio Int
-rdiv a b = (numerator a * denominator b) % (denominator a * numerator b)
-
 -- Based on differences between positions of two hails at t1 and t2
 -- where vx,vy is the direction of the thrown stone.
 thrown :: [[(Int,Int)]] -> (Int,Int) -> Maybe [(Int,Int)]
@@ -54,7 +51,7 @@ thrown (h1@[(ax,avx),(ay,vy1),(az,avz)]:[(bx,bvx),(by,bvy),(bz,bvz)]:ps) (vx,vy)
     where denom =  vx*vy1 - vx*bvy - avx*vy + avx*bvy + bvx*vy - bvx*vy1
           t1 = (-vx*ay + vx*by + bvx*ay - bvx*by + vy*ax - vy*bx - bvy*ax + bvy*bx) % denom
           t2 = (-vx*ay + vx*by + avx*ay - avx*by + vy*ax - vy*bx - vy1*ax + vy1*bx) % denom
-          vz_ratio = rdiv ((fromIntegral az + t1*fromIntegral avz) - (fromIntegral bz + t2*fromIntegral bvz)) (t1 - t2)
+          vz_ratio = ((fromIntegral az + t1*fromIntegral avz) - (fromIntegral bz + t2*fromIntegral bvz)) / (t1 - t2)
           aim = [vx,vy,numerator vz_ratio]
           initial = startpos h1 aim t1
 
