@@ -7,7 +7,8 @@ process rows = [show $ solve 64]
     where rcells (r,row) = [(r,c) | (c,s) <- zip [1..] row, s == 'S' ]
           start = head $ concatMap rcells $ zip [1..] rows
           pathed = paths (fromLists rows) (M.fromList [(start,(90001,0))]) [start]
-          solve n = length $ filter (\l -> l <= n) $ map (snd.snd) $ M.toList pathed
+          solve n = length $ filter (\l -> l <= n) $ map (lenpick n.snd) $ M.toList pathed
+          lenpick n (a,b) = head $ filter (\v -> odd v == odd n) [a,b]
 
 paths :: Matrix Char -> M.Map (Int,Int) (Int,Int) -> [(Int,Int)] -> M.Map (Int,Int) (Int,Int)
 paths _ dists [] = dists
