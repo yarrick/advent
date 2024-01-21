@@ -103,7 +103,7 @@ numElfs forces = length $ filter (\(_,k,_,_) -> k == 'E') forces
 
 play :: Matrix Char -> Int -> Int -> [Unit] -> (Bool, Int)
 play m rnd elfs forces
-    | numElfs forces < elfs = (False,0)
+    | numElfs (left++played) < elfs = (False,0)
     | kinds == 1 = (True, score rnd forces)
     | not $ null left = (True, score rnd (left++played))
     | otherwise = play m (succ rnd) elfs played
