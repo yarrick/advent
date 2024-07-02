@@ -66,7 +66,7 @@ repl st = do
   return ()
   where next = exec st
 
--- run with file as argument to explore game
+-- run with file as argument in ghci to explore game
 explore :: String -> IO ()
 explore file = do
   handle <- openFile file ReadMode
@@ -76,9 +76,6 @@ explore file = do
 
 main :: IO ()
 main = do
-  args <- getArgs
-  handle <- openFile (head args) ReadMode
-  contents <- hGetContents handle
+  contents <- hGetContents stdin
   mapM putStrLn $ outputstr $ trydoors $ prep $ newhaltstate (parse contents) [] needinput
-  hClose handle
   return ()
