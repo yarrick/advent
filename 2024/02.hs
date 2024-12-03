@@ -1,14 +1,13 @@
 process :: [[Int]] -> [String]
-process rows = map (show.length.(\f -> filter f rows)) [valid 0, valid2]
-    where valid n r = steps (succ) n r || steps (pred) n r
-          valid2 r = valid 1 r || valid 0 (tail r)
+process rows = map (show.length.(\f -> filter f rows)) [valid, valid2]
+    where valid r = steps (succ) r || steps (pred) r
+          valid2 r = any valid $ r : map (\p -> take p r ++ drop (p+1) r) [0..length r-1]
 
-steps :: (Int -> Int) -> Int -> [Int] -> Bool
-steps _ skips (a:[]) = skips >= 0
-steps op skips (a:b:cs)
-    | elem b (tail $ take 4 $ iterate op a) =
-        (steps op skips (b:cs)) || (steps op (pred skips) (a:cs))
-    | otherwise = steps op (pred skips) (a:cs)
+steps :: (Int -> Int) -> [Int] -> Bool
+steps _ (a:[]) = True
+steps op (a:b:cs)
+    | elem b (tail $ take 4 $ iterate op a) = (steps op (b:cs))
+    | otherwise = False
 
 parse r = map read $ words r
 
