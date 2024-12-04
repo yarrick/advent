@@ -39,4 +39,4 @@ input/%:
 	aoc -Io -y ${year} -d $(shell basename $@) -i $@ download
 
 %: %.hs
-	@>&2 ghc --make -O2 -rtsopts ${ghcopts} $<
+	@>&2 ghc --make -O2 -rtsopts ${ghcopts} $< -package bytestring -package deepseq
