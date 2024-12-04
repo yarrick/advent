@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-YEARS=`seq 2015 2023`
+YEARS=`seq 2015 2024`
 DAYS=`seq 1 25`
 
 # Build markdown table of execution times
@@ -25,12 +25,8 @@ for d in $DAYS; do
     for y in $YEARS; do
         DAY=$(printf "%02d" $d)
         if [ -e "$y/$DAY.hs" ]; then
-            if [ "$y/$d" == "2019/25" ]; then
-                echo -n " Interactive |"
-            else
-                TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/^0m//' -e 's/\(m[0-9]\+\.[0-9]\)[0-9]\+/\1/'`
-                echo -n " $TIME |"
-            fi
+            TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/^0m//' -e 's/\(m[0-9]\+\.[0-9]\)[0-9]\+/\1/'`
+            echo -n " $TIME |"
         else
             echo -n "       |"
         fi
