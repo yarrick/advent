@@ -6,7 +6,9 @@ solve :: [(Int->Int->Int)] -> Int -> [Int] -> Int -> Int
 solve _ tot [] n
     | n == tot = n
     | otherwise = 0
-solve fns tot (a:bs) n = maximum (map (\f -> solve fns tot bs (f n a)) fns)
+solve fns tot (a:bs) n
+    | n > tot = 0
+    | otherwise = maximum (map (\f -> solve fns tot bs (f n a)) fns)
 
 parse :: String -> (Int, [Int])
 parse s = (read $ init tot, map read parts)
