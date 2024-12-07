@@ -5,14 +5,23 @@ type Pos = (Int, Int) -- row, col
 data Dir = Up | Right | Down | Left deriving (Enum,Eq,Show)
 
 process :: (Int, Int, Pos, M.Map Pos Char) -> [String]
-process (nrows, ncols, start, walls) = map (show.M.size) [visited]
+process (nrows, ncols, start, walls) = map show [M.size visited, length $ filter loops places]
     where visited = walk (nrows, ncols, walls) M.empty start Up
+          places = M.keys $ M.delete start visited
+          loops p = loopable (nrows, ncols, M.insert p '#' walls) M.empty start Up
 
 walk :: (Int, Int, M.Map Pos Char) -> (M.Map Pos Dir) -> Pos -> Dir -> (M.Map Pos Dir)
 walk (nrows, ncols, walls) visited pos dir
     | fst npos < 0 || fst npos >= nrows || snd npos < 0 || snd npos >= ncols = visited
     | M.member npos walls = walk (nrows,ncols,walls) visited pos (turn dir)
     | otherwise = walk (nrows,ncols,walls) (M.insert npos dir visited) npos dir
+    where npos = step pos dir
+
+loopable (nrows, ncols, walls) visited pos dir
+    | fst npos < 0 || fst npos >= nrows || snd npos < 0 || snd npos >= ncols = False
+    | M.member npos walls = loopable (nrows,ncols,walls) visited pos (turn dir)
+    | M.member pos visited && visited M.! pos == dir = True
+    | otherwise = loopable (nrows,ncols,walls) (M.insert pos dir visited) npos dir
     where npos = step pos dir
 
 step (r,c) Up = (r-1,c)
