@@ -9,7 +9,7 @@ process m = map show [sum $ map last secrets, maximum $ M.elems quads]
 
 trends m (a:b:c:[]) = m
 trends m ((a,_):(b,ba):(c,ca):(d,da):es) =
-    trends (M.insertWithKey (\k o n -> n) (a,b,c,d) da m) ((b,ba):(c,ca):(d,da):es)
+    trends (M.insertWith (\n o -> o) (a,b,c,d) da m) ((b,ba):(c,ca):(d,da):es)
 
 diffs (a:[]) = []
 diffs (a:b:cs) = (diff a b) : diffs (b:cs)

@@ -3,8 +3,7 @@ import Data.List
 
 process :: [(String, String)] -> [String]
 process cs = [show $ length $ filter tee $ M.keys trips, concat $ intersperse "," biggest]
-     where join (a,b) m = M.insertWithKey adder a [b] $ M.insertWithKey adder b [a] m
-           adder k o n = o ++ n
+     where join (a,b) m = M.insertWith (++) a [b] $ M.insertWith (++) b [a] m
            connx = foldr join M.empty cs
            trips = foldr (\v m -> M.insert v 1 m) M.empty $ concatMap (triplets connx) $ M.keys connx
            tee ts = elem 't' $ map head ts

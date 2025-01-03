@@ -12,7 +12,7 @@ step mp (a, reps)
     | otherwise =  put (a*2024) mp
     where numlen = length (show a)
           (m,n) = divMod a (product $ take (div numlen 2) $ cycle [10])
-          put v m = M.insertWithKey (\_ x y -> x + y) v reps m
+          put v m = M.insertWith (+) v reps m
 
 main :: IO ()
 main = interact (unlines . process . map read . words)
