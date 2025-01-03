@@ -1,12 +1,12 @@
 import Control.DeepSeq
-import qualified Data.Map as M
+import qualified Data.IntMap.Strict as M
 
 -- value to write, ptr offset, next state
 type StateOp = (Int, Int, Char)
 type State = (Char, [StateOp])
 
 -- state, steps, mem, memptr, states
-type Machine = (Char,Int,M.Map Int Int,Int,[State])
+type Machine = (Char,Int,M.IntMap Int,Int,[State])
 
 step :: Machine -> Machine
 step m@(_,0,_,_,_) = m
@@ -40,7 +40,7 @@ readDef (cur:wr:mov:cont:ndef) = (wval,ptrdir,nst) : readDef ndef
           nst = head $ (words cont) !! 4
 
 process :: (Char, Int, [State]) -> [String]
-process (start,steps,ss) = map show [sum $ M.keys mm]
+process (start,steps,ss) = map show [sum $ M.elems mm]
     where mach = (start,steps,M.empty,5000,ss)
           (_,_,mm,_,_) = step mach
 
