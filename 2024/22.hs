@@ -1,5 +1,5 @@
 import Data.Bits
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 
 process :: [Int] -> [String]
 process m = map show [sum $ map last secrets, maximum $ M.elems quads]
