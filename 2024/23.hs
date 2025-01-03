@@ -18,7 +18,7 @@ triplets m k = map (\(a,b) -> sort [a,b,k]) $ concat shared
 
 bron_kerbosch m (clq,(r,p,x))
     | p == [] && x == [] = (r:clq,(r,p,x))
-    | otherwise = sweep m (clq,(r,p,x)) p
+    | otherwise = sweep m (clq,(r,p,x)) $ p \\ m M.! (head $ p ++ x)
     where sweep _ rs [] = rs
           sweep m (clq,(r,p,x)) (v:vs) = sweep m (nclq, (r, delete v p, v:x)) vs
                where nb = m M.! v
