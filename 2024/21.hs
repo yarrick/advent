@@ -1,6 +1,5 @@
--- 257185799027468 too high (214 minutes)
-process cs = map show $ map res [2,20]
-    where walk ds (c,n) = n * (steer (numpad: take ds (repeat dirpad)) c)
+process cs = map show $ map res [2,25]
+    where walk ds (c,n) = n * (snd $ steer ((numpad: take ds (repeat dirpad)),0) c)
           res ds = sum $ map (walk ds) cs
 
 type Pos = (Int, Int) -- row, col
@@ -21,31 +20,41 @@ dirpad = ([                ('^', (0,1)),   ('A', (0,2)),
 padpos :: PadSetup -> Char -> Pos
 padpos pad ch = snd $ head $ filter (\(p,_) -> p == ch) pad
 
-steer :: [PadState] -> String -> Int
-steer [] a = length a
-steer _ [] = 0
-steer (ps:pss) (d:ds) = steer pss ss + steer (nps:pss) ds
+steer :: ([PadState], Int) -> String -> ([PadState],Int)
+steer ([],v) a = ([], v + length a)
+steer (a,v) [] = (a, v)
+steer ((ps:pss),v) (d:ds) = steer ((nps:pss),v + len) ds
     where (nps, ss) = steerchar ps d
+          (npss, len) = steer (pss,0) ss
 
 steerchar :: PadState -> Char -> (PadState, String)
 steerchar (pad, (sr, sc)) d = ((pad, (tr,tc)), keys ++ "A")
     where (tr,tc) = padpos pad d
           keys
-            | dc > 0 && dr < 0 = move dc '>' ++ move dr '^'
-            | safedownright && dc > 0 = move dr 'v' ++ move dc '>'
-            | dc > 0 = move dc '>' ++ move dr 'v'
-            | dc == 0 && dr > 0 = move dr 'v'
-            | dc == 0 && dr < 0 = move dr '^'
-            | safeleftup && dc < 0 && dr < 0 = move dc '<' ++ move dr '^'
-            | dc < 0 && dr < 0 = move dr '^' ++ move dc '<'
-            | dc < 0 = move dr 'v' ++ move dc '<'
-            | otherwise = []
+            -- simple
+            | dc == 0                           = downup
+            | dr == 0                           = rightleft
+            -- left and up
+            | dc < 0 && dr < 0 && safeleftup    = rightleft ++ downup
+            | dc < 0 && dr < 0                  = downup ++ rightleft
+            -- left and down
+            | dc < 0 && dr > 0 && safeleftdown  = rightleft ++ downup
+            | dc < 0 && dr > 0                  = downup ++ rightleft
+            -- right
+            | dr < 0 && safeupright             = downup ++ rightleft
+            | dr < 0                            = rightleft ++ downup
+            | otherwise                         = downup ++ rightleft
             where dr = tr - sr
                   dc = tc - sc
-                  move n c = take (abs n) (repeat c)
+                  downup = nmove dr "v^"
+                  rightleft = nmove dc "><"
+                  nmove n (a:b:[])
+                    | n > 0 = take n (repeat a)
+                    | otherwise = take (abs n) (repeat b)
                   (gaprow,_) = padpos pad 'A'
                   safeleftup = gaprow == 0 || sr < 3 || tc > 0
-                  safedownright = sc > 0 || tr < 3
+                  safeleftdown = tc > 0
+                  safeupright = gaprow == 3 || sc > 0
 
 parse :: String -> (String, Int)
 parse s = (s, read $ dropWhile ('0'==) $ filter ('A'/=) s)
