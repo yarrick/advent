@@ -1,6 +1,7 @@
 import Intcode
 import Data.List
-import Debug.Trace
+
+type Packet = (Integer, [Integer])
 
 needinput :: State -> Bool
 needinput st
@@ -25,35 +26,35 @@ splitpacket state
 addpacket :: State -> [Integer] -> State
 addpacket st bytes = foldl inputnum st bytes
 
-sendpackets :: [State] -> Integer -> [[Integer]] -> [State]
-sendpackets ss _ [] = ss
-sendpackets (s:[]) 50 (p:ps) = trace ("Pkt to " ++ show (head p) ++ " data " ++ show (tail p))
-  [(addpacket s p)]
-sendpackets (s:ss) idx pkts@((dst:ds):ps)
-  | idx < dst = s : sendpackets ss (idx+1) pkts
-  | idx == dst = sendpackets ((addpacket s ds):ss) idx ps
+sendpackets :: ([State],[Packet]) -> Integer -> [[Integer]] -> ([State],[Packet])
+sendpackets (ss,pktlog) _ [] = (ss, pktlog)
+sendpackets ((s:[]),pktlog) 50 (p:ps) = ([(addpacket s p)], pktlog ++ [(head p, tail p)])
+sendpackets ((s:ss),pktlog) idx pkts@((dst:ds):ps)
+  | idx < dst = ins s $ sendpackets (ss, pktlog) (idx+1) pkts
+  | idx == dst = sendpackets (((addpacket s ds):ss),pktlog) idx ps
+    where ins st (states,pkts) = (st:states,pkts)
 
-network :: [State] -> (Int, [State])
-network states = (length packets, sendpackets newstates 0 packets)
+network :: ([State], [Packet]) -> (Int, ([State], [Packet]))
+network (states,pktlog) = (length packets, sendpackets (newstates, pktlog) 0 packets)
   where (newstates, rawpackets) = unzip $ map splitpacket states
         packets = sort $ filter (\x -> length x > 0) rawpackets
 
-spin :: (Int, [State]) -> (Int, [State])
+spin :: (Int, [State]) -> [Packet]
 spin (pktless,states)
  | pktsend == 0 && pktless > 1000 && length natbuf > 1 =
-  trace ("Sending NAT packet " ++ show natdata) $
-   (0,(addpacket (head next) natdata) : tail next)
- | pktsend > 0 = (0, next)
- | otherwise = (pktless+1,next)
- where (pktsend, next) = network $ ticker states
+   [(0,natdata)] ++ spin (0,(addpacket (head next) natdata) : tail next)
+ | pktsend > 0 = newpkts ++ spin (0, next)
+ | otherwise = spin (pktless + 1, next)
+ where (pktsend, (next, newpkts)) = network (ticker states, [])
        natbuf = indata (next !! 50)
        natdata = drop (length natbuf - 2) natbuf
 
-run bytes = head $ drop 150000 $ iterate spin (0, map gen [0..50])
-  where gen x = newstate (parse bytes) [x]
-
 process :: String -> [String]
-process rows = [show $ run rows]
+process bytes = map (show.last.snd) [head packets, dupnat packets]
+    where packets = spin (0, map (\x -> newstate (parse bytes) [x]) [0..50])
+          yval (_, (x:y:_)) = y
+          dupnat ((0,a):(0,b):cs) = (0,a)
+          dupnat (a:bs) = dupnat bs
 
 main :: IO ()
 main = interact (unlines . process)
