@@ -1,10 +1,13 @@
+import qualified Data.Map as M
+
 process cs = map show $ map res [2,25]
-    where walk ds (c,n) = n * (snd $ steer ((numpad: take ds (repeat dirpad)),0) c)
+    where walk ds (c,n) = n * (solve (numpad: take ds (repeat dirpad)) c)
           res ds = sum $ map (walk ds) cs
 
 type Pos = (Int, Int) -- row, col
 type PadSetup = [(Char, Pos)] -- position of each key
 type PadState = (PadSetup, Pos)
+type Cache = M.Map ([PadState], Char) ([PadState], Int)
 
 numpad = ([('7', (0,0)),   ('8', (0,1)),   ('9', (0,2)),
            ('4', (1,0)),   ('5', (1,1)),   ('6', (1,2)),
@@ -20,12 +23,21 @@ dirpad = ([                ('^', (0,1)),   ('A', (0,2)),
 padpos :: PadSetup -> Char -> Pos
 padpos pad ch = snd $ head $ filter (\(p,_) -> p == ch) pad
 
-steer :: ([PadState], Int) -> String -> ([PadState],Int)
-steer ([],v) a = ([], v + length a)
-steer (a,v) [] = (a, v)
-steer ((ps:pss),v) (d:ds) = steer ((nps:pss),v + len) ds
+solve :: [PadState] -> String -> Int
+solve ps ss = len
+    where (_,len,c) = steer (ps,0,M.empty) ss
+
+steer :: ([PadState], Int, Cache) -> String -> ([PadState], Int, Cache)
+steer ([],v,c) a = ([], v + length a, c)
+steer (a,v,c) [] = (a, v, c)
+steer ((ps:pss),v,c) (d:ds)
+    | M.member mkey c = steer (cps,v + clen, c) ds
+    | otherwise = steer ((nps:pss),v + len, sc) ds
     where (nps, ss) = steerchar ps d
-          (npss, len) = steer (pss,0) ss
+          mkey = ((ps:pss), d)
+          (cps,clen) = c M.! mkey
+          (npss, len, nc) = steer (pss,0,c) ss
+          sc = M.insert mkey ((nps:pss), len) nc
 
 steerchar :: PadState -> Char -> (PadState, String)
 steerchar (pad, (sr, sc)) d = ((pad, (tr,tc)), keys ++ "A")
