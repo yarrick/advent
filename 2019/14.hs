@@ -47,22 +47,27 @@ trade elems swaps ranks = merge $ sortBy (\(_,a) (_,b) -> compare a b) $ elx ++ 
   where top = topranked elems ranks
         elx = delete top elems
 
-orify ((n,"ORE"):[]) _ _ = n
-orify elems swaps ranks = orify (trade elems swaps ranks) swaps ranks
+orify ((n,"ORE"):[]) _ = n
+orify elems (swaps, ranks) = orify (trade elems swaps ranks) (swaps, ranks)
 
-part1 :: [String] -> String
-part1 rows = show $ orify [(1,"FUEL")] swaps ranks
-  where swaps = map parse rows
-        ranks = ranker 1 [(0,"ORE")] swaps
+part1 :: ([Swap], [(Integer,String)]) -> Integer
+part1 rules = orify [(1,"FUEL")] rules
 
-part2 :: [String] -> String
-part2 rows = show $ fst $ last $ filter (\(a,b) -> b <= 1000000000000) trillions
-  where swaps = map parse rows
-        ranks = ranker 1 [(0,"ORE")] swaps
-        trillions = map (\n -> (n,orify [(n,"FUEL")] swaps ranks)) [1122000..1122200]
+trillion rules n = orify [(n,"FUEL")] rules <= 1000000000000
 
-process :: [String] -> [String]
-process rows = [part1 rows, part2 rows]
+seek rules low high
+    | low + 1 >= high = low
+    | trillion rules mid = seek rules mid high
+    | otherwise = seek rules low mid
+    where mid = low + ((high - low) `div` 2)
+
+part2 :: ([Swap], [(Integer,String)]) -> Integer
+part2 rules = seek rules starter (10*starter)
+    where starter = last $ takeWhile (trillion rules) $ iterate (10*) 1
+
+process :: [Swap] -> [String]
+process swaps = map show [part1 rules, part2 rules]
+  where rules = (swaps, ranker 1 [(0,"ORE")] swaps)
 
 main :: IO ()
-main = interact (unlines . process . lines)
+main = interact (unlines . process . map parse . lines)
