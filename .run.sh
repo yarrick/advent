@@ -1,5 +1,7 @@
 #!/bin/bash
 BIN=$1
+export LC_NUMERIC=C
+export TIMEFORMAT=$'\nTime: %3Rs'
 shift 1
 for f in "$@"
 do

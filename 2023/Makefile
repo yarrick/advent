@@ -25,7 +25,7 @@ run: ${day} input/${day}
 
 # Build and run with private input, print only elapsed time
 bench: ${day} input/${day}
-	@../.run.sh ./${day} input/${day} 2>&1 | grep "^real" | awk '{ print $$2 }'
+	@../.run.sh ./${day} input/${day} 2>&1 | tail -n 1 | awk '{ print $$2 }'
 
 # Remove built files and logs
 clean:

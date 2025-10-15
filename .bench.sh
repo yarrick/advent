@@ -25,11 +25,25 @@ for d in $DAYS; do
     for y in $YEARS; do
         DAY=$(printf "%02d" $d)
         if [ -e "$y/$DAY.hs" ]; then
-            TIME=`make -sC $y bench day=$DAY ghcopts=-v0 | sed -e 's/^0m//' -e 's/\(m[0-9]\+\.[0-9]\)[0-9]\+/\1/'`
-            echo -n " $TIME |"
+            TIMECMD="make -sC $y bench day=$DAY ghcopts=-v0"
+            TIMES=$(for i in $(seq 1 5); do
+                echo $($TIMECMD) | sed 's/s$//'
+            done)
+            MEDIAN_SECONDS=$(echo "$TIMES" | sort -n | sed -n '3p')
+            INT_SECONDS=${MEDIAN_SECONDS%.*}
+            FRACTIONAL_PART=${MEDIAN_SECONDS#*.}
+            if (( $INT_SECONDS >= 60 )); then
+                MINUTES=$(( $INT_SECONDS / 60 ))
+                REM_SECONDS=$(( ${INT_SECONDS%.*} % 60 ))
+                TIME=$(printf "%dm%02d.%s" "$MINUTES" "$REM_SECONDS" "${FRACTIONAL_PART:0:1}")
+            else
+                TIME=${MEDIAN_SECONDS}
+            fi
+            echo -n " ${TIME}s |"
         else
             echo -n "       |"
         fi
     done
     echo
+    sleep 60
 done
